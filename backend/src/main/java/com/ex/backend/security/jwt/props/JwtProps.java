@@ -1,4 +1,4 @@
-package com.ex.backend.security.props;
+package com.ex.backend.security.jwt.props;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -1,7 +1,7 @@
-package com.ex.backend.security.provider;
+package com.ex.backend.security.jwt.provider;
 
 import com.ex.backend.security.jwt.constants.JwtConstants;
-import com.ex.backend.security.props.JwtProps;
+import com.ex.backend.security.jwt.props.JwtProps;
 import com.ex.backend.user.dto.PrincipalDetails;
 import com.ex.backend.user.dto.User;
 import com.ex.backend.user.mapper.UserMapper;
