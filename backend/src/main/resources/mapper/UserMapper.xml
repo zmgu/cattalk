@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ex.backend.user.mapper.UserMapper">
+    <!-- Users 매핑-->
+    <resultMap type="User" id="userMap">
+        <id property="id" column="id" />
+
+        <result property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="nickname" column="nickname" />
+        <result property="password" column="password" />
+        <result property="name" column="name" />
+        <result property="email" column="email" />
+        <result property="enabled" column="enabled" />
+        <result property="regDate" column="reg_date" />
+        <result property="updDate" column="upd_date" />
+    </resultMap>
+
+    <select id="findByUsername" resultType="user">
+        SELECT username, nickname, name, email
+        FROM users
+        WHERE username = #{username}
+    </select>
+
+    <insert id="save">
+        INSERT INTO users(username, password, name, email, role)
+        VALUES (#{username}, #{password}, #{name}, #{email}, #{role})
+    </insert>
+
+    <insert id="insert">
+        INSERT INTO users(username, password, name, email, role)
+        VALUES (#{username}, #{password}, #{name}, #{email}, #{role})
+    </insert>
+
+    <insert id="oauthSave">
+        INSERT INTO users(username, name, email, role)
+        VALUES (#{username}, #{name}, #{email}, #{role})
+    </insert>
+
+    <update id="update">
+        UPDATE users
+        SET name = #{name}
+          ,email = #{email}
+        WHERE username = #{username}
+    </update>
+</mapper>
