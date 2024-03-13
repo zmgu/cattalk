@@ -20,13 +20,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserMapper userMapper;
 
-    @SneakyThrows
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
-        System.out.println(oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         OAuth2Response oAuth2Response = null;
@@ -47,28 +44,35 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
 
-        User existData = userMapper.findByUsername(username);
+        PrincipalDetails principalDetails = null;
 
-        if (existData == null) {
+        try {
+            User existData = userMapper.findByUsername(username);
 
-            User user = new User();
-            user.setUsername(username);
-            user.setEmail(oAuth2Response.getEmail());
-            user.setName(oAuth2Response.getName());
-            user.setRole("ROLE_USER");
+            if (existData == null) {
 
-            userMapper.oauthSave(user);
+                User user = new User();
+                user.setUsername(username);
+                user.setEmail(oAuth2Response.getEmail());
+                user.setName(oAuth2Response.getName());
+                user.setRole("ROLE_USER");
 
-            return new PrincipalDetails(user);
+                userMapper.oauthSave(user);
+
+                principalDetails = new PrincipalDetails(user);
+            }
+            else {
+
+                existData.setEmail(oAuth2Response.getEmail());
+                existData.setName(oAuth2Response.getName());
+
+                userMapper.update(existData);
+
+                principalDetails = new PrincipalDetails(existData);
+            }
+        } catch (Exception e) {
+
         }
-        else {
-
-            existData.setEmail(oAuth2Response.getEmail());
-            existData.setName(oAuth2Response.getName());
-
-            userMapper.update(existData);
-
-            return new PrincipalDetails(existData);
-        }
+        return principalDetails;
     }
 }
