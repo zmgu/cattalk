@@ -1,6 +1,7 @@
 package com.ex.backend.security.jwt.service;
 
-import com.ex.backend.redis.RefreshTokenRepository;
+import com.ex.backend.redis.RefreshTokenService;
+import com.ex.backend.security.jwt.dto.RefreshToken;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -11,14 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-
 @Service
 @RequiredArgsConstructor
 public class ReissueService {
 
     private final JwtProvider jwtProvider;
-    private final RefreshTokenRepository refreshRepository;
+    private final RefreshTokenService refreshTokenService;
 
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         //get refresh token
@@ -57,7 +56,7 @@ public class ReissueService {
         }
 
         //DB에 저장되어 있는지 확인
-        Boolean isExist = refreshRepository.findByRefreshToken(refresh);
+        Boolean isExist = refreshTokenService.existsRefreshToken(refresh);
         if (!isExist) {
 
             //response body
@@ -68,12 +67,12 @@ public class ReissueService {
         String role = jwtProvider.getRole(refresh);
 
         //make new JWT
-        String newAccess = jwtProvider.createJwt("access", username, role, 600000L);
-        String newRefresh = jwtProvider.createJwt("refresh", username, role, 86400000L);
+        String newAccess = jwtProvider.createToken("access", username, role, 600000L);
+        String newRefresh = jwtProvider.createToken("refresh", username, role, 86400000L);
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
-        refreshRepository.deleteByRefresh(refresh);
-        addRefreshEntity(username, newRefresh, 86400000L);
+        refreshTokenService.deleteRefreshToken(refresh);
+        refreshTokenService.createRefreshToken(new RefreshToken(refresh, username));
 
         //response
         response.setHeader("access", newAccess);
@@ -93,15 +92,4 @@ public class ReissueService {
         return cookie;
     }
 
-    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
-
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-        RefreshEntity refreshEntity = new RefreshEntity();
-        refreshEntity.setUsername(username);
-        refreshEntity.setRefresh(refresh);
-        refreshEntity.setExpiration(date.toString());
-
-        refreshRepository.save(refreshEntity);
-    }
 }
