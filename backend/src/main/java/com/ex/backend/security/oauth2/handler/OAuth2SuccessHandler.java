@@ -1,7 +1,7 @@
 package com.ex.backend.security.oauth2.handler;
 
 
-import com.ex.backend.redis.RefreshTokenRepository;
+import com.ex.backend.redis.RefreshTokenService;
 import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.jwt.dto.RefreshToken;
 import com.ex.backend.security.jwt.provider.JwtProvider;
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtProvider jwtProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
     private final Logger logger = Logger.getLogger(OAuth2SuccessHandler.class.getName());
 
     @Override
@@ -44,18 +44,21 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = jwtProvider.createToken("access" ,username, role, 600000l);
         String refreshToken = jwtProvider.createToken("refresh" ,username, role, 86400000L);
 
-        logger.info("accessToken" + accessToken);
-        logger.info("refreshToken" + refreshToken);
+        logger.info("accessToken: " + accessToken);
+        logger.info("refreshToken: " + refreshToken);
 
 
         // Redis에 refreshToken 저장
-        refreshTokenRepository.save(new RefreshToken(refreshToken, username));
+        refreshTokenService.createRefreshToken(new RefreshToken(refreshToken, username));
 
-
-        response.addCookie(createCookie(JwtConstants.REFRESH_TOKEN_HEADER, refreshToken));  // 쿠키에 refreshToken 저장
-        response.addHeader(JwtConstants.ACCESS_TOKEN_HEADER, JwtConstants.TOKEN_PREFIX + accessToken);  // Header에 accessToken 저장
+        /*
+        *
+        *  쿠키에 refreshToken 저장
+        *  http://localhost:3000/reissue 경로를 통해 accessToken 발급하여 리액트에 저장
+        */
+        response.addCookie(createCookie(JwtConstants.REFRESH_TOKEN_HEADER, refreshToken));
         response.setStatus(HttpStatus.OK.value());
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("http://localhost:3000/oauth2");
     }
 
     private Cookie createCookie(String tokenHeader, String token) {
