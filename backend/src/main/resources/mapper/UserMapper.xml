@@ -20,7 +20,7 @@
     </resultMap>
 
     <select id="findByUsername" resultType="user">
-        SELECT username, nickname, name, email
+        SELECT username, nickname, name, email, role
         FROM users
         WHERE username = #{username}
     </select>
