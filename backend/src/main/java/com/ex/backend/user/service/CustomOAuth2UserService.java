@@ -3,6 +3,7 @@ package com.ex.backend.user.service;
 import com.ex.backend.security.oauth2.dto.GoogleResponse;
 import com.ex.backend.security.oauth2.dto.NaverResponse;
 import com.ex.backend.security.oauth2.dto.OAuth2Response;
+import com.ex.backend.security.oauth2.handler.OAuth2SuccessHandler;
 import com.ex.backend.user.dto.PrincipalDetails;
 import com.ex.backend.user.dto.User;
 import com.ex.backend.user.mapper.UserMapper;
@@ -14,11 +15,14 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.logging.Logger;
+
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserMapper userMapper;
+    private final Logger logger = Logger.getLogger(CustomOAuth2UserService.class.getName());
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -56,7 +60,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 user.setEmail(oAuth2Response.getEmail());
                 user.setName(oAuth2Response.getName());
                 user.setRole("ROLE_USER");
-
+                logger.info("user: " + user);
                 userMapper.oauthSave(user);
 
                 principalDetails = new PrincipalDetails(user);
@@ -73,6 +77,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } catch (Exception e) {
 
         }
+        logger.info("username: " + username);
+
         return principalDetails;
     }
 }
