@@ -1,0 +1,9 @@
+.menubar-container {
+    position: absolute;
+    top: 500px;
+    width: 100%;
+    height: 70px;
+    background-color: black;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
