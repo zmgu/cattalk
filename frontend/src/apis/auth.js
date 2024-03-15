@@ -3,6 +3,12 @@ import api from './api';
 // 로그인
 export const login = (username, password) => api.post(`/login?username=${username}&password=${password}`)
 
+export const createAccessToken = () => {
+    return api.get('/auth/reissue', {
+        withCredentials: true 
+    });
+}
+
 // 사용자 정보
 export const info = () => api.get(`/users/info`)
 
