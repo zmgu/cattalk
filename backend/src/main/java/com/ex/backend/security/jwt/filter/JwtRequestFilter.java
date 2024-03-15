@@ -31,7 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // 헤더에서 accessToken 추출
-        String accessToken = request.getHeader("access");
+        String accessToken = request.getHeader("accessToken");
 
         // 토큰이 없다면 다음 필터로 넘김
         if (accessToken == null) {
