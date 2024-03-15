@@ -75,8 +75,8 @@ public class ReissueService {
         refreshTokenService.createRefreshToken(new RefreshToken(refresh, username));
 
         //response
-        response.setHeader("access", newAccess);
-        response.addCookie(createCookie("refresh", newRefresh));
+        response.setHeader("accessToken", newAccess);
+        response.addCookie(createCookie("refreshToken", newRefresh));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
