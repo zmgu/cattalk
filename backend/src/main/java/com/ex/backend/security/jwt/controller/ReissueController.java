@@ -14,7 +14,7 @@ public class ReissueController {
 
     private final ReissueService reissueService;
 
-    @PostMapping("/reissue")
+    @PostMapping("/auth/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         return reissueService.reissue(request, response);
