@@ -41,24 +41,17 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String accessToken = jwtProvider.createToken("access" ,username, role, 600000l);
         String refreshToken = jwtProvider.createToken("refresh" ,username, role, 86400000L);
 
-        logger.info("accessToken: " + accessToken);
         logger.info("refreshToken: " + refreshToken);
-
 
         // Redis에 refreshToken 저장
         refreshTokenService.createRefreshToken(new RefreshToken(refreshToken, username));
 
-        /*
-        *
-        *  쿠키에 refreshToken 저장
-        *  http://localhost:3000/reissue 경로를 통해 accessToken 발급하여 리액트에 저장
-        */
+
         response.addCookie(createCookie(JwtConstants.REFRESH_TOKEN_HEADER, refreshToken));
         response.setStatus(HttpStatus.OK.value());
-        response.sendRedirect("http://localhost:3000/oauth2");
+        response.sendRedirect("http://localhost:3000");
     }
 
     private Cookie createCookie(String tokenHeader, String token) {
