@@ -13,7 +13,7 @@ const LoginForm = () => {
             <form method="">
                 <div className="input-box">
                     <div className="input-box-icon">
-                    <FontAwesomeIcon icon={faUser} className='custom-icon'/>
+                    <FontAwesomeIcon icon={faUser} className='login-icon'/>
                     </div>
                     <input type='text'
                     value={email}
@@ -25,7 +25,7 @@ const LoginForm = () => {
 
                 <div className="input-box">
                     <div className="input-box-icon">
-                    <FontAwesomeIcon icon={faLock} className='custom-icon'/>
+                    <FontAwesomeIcon icon={faLock} className='login-icon'/>
                     </div>
                     <input type='password'
                     value={password}
