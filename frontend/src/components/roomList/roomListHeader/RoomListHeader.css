@@ -5,3 +5,8 @@
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
 }
+
+.header-container h3 {
+    margin: 0;
+    padding: 40px 10px;
+}
