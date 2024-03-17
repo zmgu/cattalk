@@ -3,12 +3,10 @@ package com.ex.backend.user.service;
 import com.ex.backend.security.oauth2.dto.GoogleResponse;
 import com.ex.backend.security.oauth2.dto.NaverResponse;
 import com.ex.backend.security.oauth2.dto.OAuth2Response;
-import com.ex.backend.security.oauth2.handler.OAuth2SuccessHandler;
 import com.ex.backend.user.dto.PrincipalDetails;
 import com.ex.backend.user.dto.User;
 import com.ex.backend.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -60,7 +58,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 user.setEmail(oAuth2Response.getEmail());
                 user.setName(oAuth2Response.getName());
                 user.setRole("ROLE_USER");
-                logger.info("user: " + user);
                 userMapper.oauthSave(user);
 
                 principalDetails = new PrincipalDetails(user);
@@ -75,9 +72,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 principalDetails = new PrincipalDetails(existData);
             }
         } catch (Exception e) {
-
+            logger.severe("에러 내용 : " + e.getMessage());
         }
-        logger.info("username: " + username);
 
         return principalDetails;
     }

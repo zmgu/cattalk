@@ -12,26 +12,31 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.logging.Logger;
+
 @Service
 @RequiredArgsConstructor
 public class ReissueService {
 
     private final JwtProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
+    private final Logger logger = Logger.getLogger(ReissueService.class.getName());
 
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+
+        logger.info("====ReissueService 시작====");
         //get refresh token
-        String refresh = null;
+        String refreshToken = null;
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
 
-            if (cookie.getName().equals("refresh")) {
+            if (cookie.getName().equals("refreshToken")) {
 
-                refresh = cookie.getValue();
+                refreshToken = cookie.getValue();
             }
         }
 
-        if (refresh == null) {
+        if (refreshToken == null) {
 
             //response status code
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
@@ -39,7 +44,7 @@ public class ReissueService {
 
         //expired check
         try {
-            jwtProvider.isExpired(refresh);
+            jwtProvider.isExpired(refreshToken);
         } catch (ExpiredJwtException e) {
 
             //response status code
@@ -47,7 +52,7 @@ public class ReissueService {
         }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
-        String category = jwtProvider.getCategory(refresh);
+        String category = jwtProvider.getCategory(refreshToken);
 
         if (!category.equals("refresh")) {
 
@@ -56,23 +61,23 @@ public class ReissueService {
         }
 
         //DB에 저장되어 있는지 확인
-        Boolean isExist = refreshTokenService.existsRefreshToken(refresh);
+        Boolean isExist = refreshTokenService.existsRefreshToken(refreshToken);
         if (!isExist) {
 
             //response body
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        String username = jwtProvider.getUsername(refresh);
-        String role = jwtProvider.getRole(refresh);
+        String username = jwtProvider.getUsername(refreshToken);
+        String role = jwtProvider.getRole(refreshToken);
 
         //make new JWT
-        String newAccess = jwtProvider.createToken("access", username, role, 600000L);
-        String newRefresh = jwtProvider.createToken("refresh", username, role, 86400000L);
+        String newAccess = jwtProvider.createToken("accessToken", username, role, 600000L);
+        String newRefresh = jwtProvider.createToken("refreshToken", username, role, 86400000L);
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
-        refreshTokenService.deleteRefreshToken(refresh);
-        refreshTokenService.createRefreshToken(new RefreshToken(refresh, username));
+        refreshTokenService.deleteRefreshToken(refreshToken);
+        refreshTokenService.createRefreshToken(new RefreshToken(refreshToken, username));
 
         //response
         response.setHeader("accessToken", newAccess);
