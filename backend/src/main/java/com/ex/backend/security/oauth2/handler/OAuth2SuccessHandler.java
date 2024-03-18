@@ -41,7 +41,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String refreshToken = jwtProvider.createToken("refresh" ,username, role, 86400000L);
+        String refreshToken = jwtProvider.createToken("RefreshToken" ,username, role, 86400000L);
 
         logger.info("refreshToken: " + refreshToken);
 
@@ -51,15 +51,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(createCookie(JwtConstants.REFRESH_TOKEN_HEADER, refreshToken));
         response.setStatus(HttpStatus.OK.value());
-        response.sendRedirect("http://localhost:3000");
+        response.sendRedirect("http://localhost:3000/oauth2");
     }
 
     private Cookie createCookie(String tokenHeader, String token) {
 
         Cookie cookie = new Cookie(tokenHeader, token);
         cookie.setMaxAge(600*60*60);
-        //cookie.setSecure(true);
-        //cookie.setPath("/");
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;
