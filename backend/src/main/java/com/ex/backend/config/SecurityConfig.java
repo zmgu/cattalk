@@ -60,7 +60,7 @@ public class SecurityConfig {
                     configuration.setMaxAge(3600L);
 
                     List<String> exposedHeaders = Arrays.asList("Set-Cookie", "Authorization");
-                    configuration.setExposedHeaders(exposedHeaders);
+                    configuration.setExposedHeaders(exposedHeaders); // 리스트 안에 값만 헤더 이름으로 읽을 수 있음
 
                     return configuration;
                 }));
