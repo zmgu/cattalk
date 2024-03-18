@@ -1,22 +1,22 @@
-import api from './api';
+import privateApi from './privateApi';
 
 // 로그인
-export const login = (username, password) => api.post(`/login?username=${username}&password=${password}`)
+export const login = (username, password) => privateApi.post(`/login?username=${username}&password=${password}`)
 
 export const createAccessToken = () => {
-    return api.get('/auth/reissue', {
+    return privateApi.get('/auth/reissue', {
         withCredentials: true 
     });
 }
 
 // 사용자 정보
-export const info = () => api.get(`/users/info`)
+export const info = () => privateApi.get(`/users/info`)
 
 // 회원 가입 
-export const join = (data) => api.post(`/users`, data)
+export const join = (data) => privateApi.post(`/users`, data)
 
 // 회원 정보 수정
-export const update = (data) => api.put(`/users`, data)
+export const update = (data) => privateApi.put(`/users`, data)
 
 // 회원 탈퇴
-export const remove = (userId) => api.delete(`/users/${userId}`)
+export const remove = (userId) => privateApi.delete(`/users/${userId}`)

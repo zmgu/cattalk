@@ -113,6 +113,10 @@ background-position: center;
     background-position: center;
 }
 
+.naver:hover {
+    cursor: pointer;
+}
+
 .google {
     background-image: url("../../assets/google_icon.svg");
     background-size: 22px 22px;
@@ -123,6 +127,10 @@ background-position: center;
     background-color: white;
 }
 
+.google:hover {
+    cursor: pointer;
+}
+
 .kakao {
     background-image: url("../../assets/kakao_icon.png");
     background-size: 36px 36px;
@@ -130,4 +138,8 @@ background-position: center;
     background-position: center;
     background-color: #FEE500;
     border-radius: 100%;
+}
+
+.kakao:hover {
+    cursor: pointer;
 }
