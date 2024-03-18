@@ -24,28 +24,36 @@ public class ReissueService {
 
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
-        logger.info("====ReissueService 시작====");
+        logger.info("==== ReissueService 시작 ====");
         //get refresh token
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
 
-            if (cookie.getName().equals("refreshToken")) {
+        if (cookies == null) {
+            logger.info("No cookies found.");
+            return new ResponseEntity<>("No cookies found.", HttpStatus.BAD_REQUEST);
+        }
+
+        for (Cookie cookie : cookies) {
+            logger.info(" cookie.getName() : " + cookie.getName());
+            if (cookie.getName().equals("RefreshToken")) {
 
                 refreshToken = cookie.getValue();
+                logger.info(" refreshToken : " + refreshToken);
+
             }
         }
 
         if (refreshToken == null) {
-
+            logger.info(" refreshToken null ");
             //response status code
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
         }
 
-        //expired check
         try {
             jwtProvider.isExpired(refreshToken);
         } catch (ExpiredJwtException e) {
+            logger.info(" refreshToken 만료됨 ");
 
             //response status code
             return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
@@ -54,15 +62,17 @@ public class ReissueService {
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtProvider.getCategory(refreshToken);
 
-        if (!category.equals("refresh")) {
+        if (!category.equals("RefreshToken")) {
+            logger.info(" refreshToken 카테고리가 아님 ");
 
             //response status code
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
         //DB에 저장되어 있는지 확인
-        Boolean isExist = refreshTokenService.existsRefreshToken(refreshToken);
+        Boolean isExist = refreshTokenService.existRefreshToken(refreshToken);
         if (!isExist) {
+            logger.info(" 저장되어 있는 refreshToken이 아님 ");
 
             //response body
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
@@ -72,16 +82,16 @@ public class ReissueService {
         String role = jwtProvider.getRole(refreshToken);
 
         //make new JWT
-        String newAccess = jwtProvider.createToken("accessToken", username, role, 600000L);
-        String newRefresh = jwtProvider.createToken("refreshToken", username, role, 86400000L);
+        String accessToken = jwtProvider.createToken("accessToken", username, role, 600000L);
+        String newRefreshToken = jwtProvider.createToken("refreshToken", username, role, 86400000L);
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
         refreshTokenService.deleteRefreshToken(refreshToken);
-        refreshTokenService.createRefreshToken(new RefreshToken(refreshToken, username));
+        refreshTokenService.createRefreshToken(new RefreshToken(newRefreshToken, username));
 
         //response
-        response.setHeader("accessToken", newAccess);
-        response.addCookie(createCookie("refreshToken", newRefresh));
+        response.setHeader("accessToken", accessToken);
+        response.addCookie(createCookie("refreshToken", newRefreshToken));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -91,7 +101,7 @@ public class ReissueService {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24*60*60);
         //cookie.setSecure(true);
-        //cookie.setPath("/");
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;
