@@ -1,10 +1,10 @@
 // 소셜로그인 리다이렉트를 위한 컴포넌트
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { createAccessToken } from '../apis/auth';
+import { useNavigate } from 'react-router-dom';
+import publicApi from '../apis/publicApi';
 
 const OAuth2RedirectHandler = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     useEffect(() => {
         refreshTokenAndRedirect();
@@ -12,13 +12,14 @@ const OAuth2RedirectHandler = () => {
 
     const refreshTokenAndRedirect = async () => {
         try {
-            const response = await createAccessToken();
+            console.log('publicApi 시작')
+            const response = await publicApi.post('/auth/reissue', {}, { withCredentials: true });
             localStorage.setItem('accessToken', response.data.accessToken);
-            history.push('/');
+            navigate('/');
         } catch (error) {
             // alert 메시지 (다시 로그인 해주세요 같은 걸로 변경 예정)
-            console.error('엑세스 토큰 재발급 실패', error);
-            history.push('/login');
+            console.error('publicApi에서 에러 발생', error);
+            navigate('/login');
         }
     };
 
