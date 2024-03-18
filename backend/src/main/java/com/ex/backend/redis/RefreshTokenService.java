@@ -20,7 +20,7 @@ public class RefreshTokenService {
         redisTemplate.opsForValue().set(key, refreshToken.getUsername());
     }
 
-    public boolean existsRefreshToken(String refreshToken) {
+    public boolean existRefreshToken(String refreshToken) {
         String key = generateKey(refreshToken);
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
