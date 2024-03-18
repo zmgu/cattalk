@@ -9,7 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 
-@Slf4j
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -32,12 +30,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // 헤더에서 accessToken 추출
         String accessToken = request.getHeader("accessToken");
+        logger.info("accessToken :" + accessToken);
 
-        // 토큰이 없다면 다음 필터로 넘김
-        if (accessToken == null) {
+        String requestURI = request.getRequestURI();
 
+        // 엑세스 토큰이 없고, 재발급 경로 요청이었을 경우는 다음 필터로 이동
+        if (accessToken == null && requestURI.equals("/auth/reissue")) {
             filterChain.doFilter(request, response);
-
+            return;
+        } else if(accessToken == null && !requestURI.equals("/auth/reissue")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 설정
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"error\": \"No access token provided\"}");
             return;
         }
 
