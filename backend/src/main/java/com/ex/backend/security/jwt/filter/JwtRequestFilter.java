@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 import java.util.logging.Logger;
 
 @RequiredArgsConstructor
@@ -29,9 +30,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // 헤더에서 accessToken 추출
-        String accessToken = request.getHeader("accessToken");
+        String accessToken = request.getHeader("authorization");
         logger.info("accessToken :" + accessToken);
-
         String requestURI = request.getRequestURI();
 
         // 엑세스 토큰이 없고, 재발급 경로 요청이었을 경우는 다음 필터로 이동
@@ -45,6 +45,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             response.getWriter().write("{\"error\": \"No access token provided\"}");
             return;
         }
+
+        accessToken = accessToken.substring(7).trim();
 
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
         try {

@@ -39,7 +39,8 @@ public class ReissueService {
             if (cookie.getName().equals("RefreshToken")) {
 
                 refreshToken = cookie.getValue();
-                logger.info(" refreshToken : " + refreshToken);
+                logger.info(" refreshToken : ");
+                logger.info(refreshToken);
 
             }
         }
@@ -82,16 +83,16 @@ public class ReissueService {
         String role = jwtProvider.getRole(refreshToken);
 
         //make new JWT
-        String accessToken = jwtProvider.createToken("accessToken", username, role, 600000L);
-        String newRefreshToken = jwtProvider.createToken("refreshToken", username, role, 86400000L);
+        String accessToken = jwtProvider.createToken("AccessToken", username, role, 600000L);
+        String newRefreshToken = jwtProvider.createToken("RefreshToken", username, role, 86400000L);
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
         refreshTokenService.deleteRefreshToken(refreshToken);
         refreshTokenService.createRefreshToken(new RefreshToken(newRefreshToken, username));
 
         //response
-        response.setHeader("accessToken", accessToken);
-        response.addCookie(createCookie("refreshToken", newRefreshToken));
+        response.setHeader("Authorization", accessToken);
+        response.addCookie(createCookie("RefreshToken", newRefreshToken));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

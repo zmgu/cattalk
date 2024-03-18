@@ -14,7 +14,13 @@ const OAuth2RedirectHandler = () => {
         try {
             console.log('publicApi 시작')
             const response = await publicApi.post('/auth/reissue', {}, { withCredentials: true });
-            localStorage.setItem('accessToken', response.data.accessToken);
+
+            console.log('응답 헤더:', response.headers);
+            const accessToken = response.headers['authorization'];
+
+            console.log(`publicApi 통해 발급한 accessToken : ${accessToken}`);
+
+            localStorage.setItem('Authorization', accessToken);
             navigate('/');
         } catch (error) {
             // alert 메시지 (다시 로그인 해주세요 같은 걸로 변경 예정)
