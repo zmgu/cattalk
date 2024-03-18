@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 public class JwtProvider {
 
     private final JwtProps jwtProps;
-    private final Logger logger = Logger.getLogger(JwtProvider.class.getName());
 
     private SecretKey secretKey;
 
@@ -35,9 +34,6 @@ public class JwtProvider {
                 .claim("username", username)
                 .claim("role", role)
                 .compact();
-
-        logger.info(category + "Token 생성 :");
-        logger.info(token);
 
         return token;
     }
