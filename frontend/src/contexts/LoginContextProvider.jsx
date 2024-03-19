@@ -33,6 +33,10 @@ const LoginContextProvider = ({ children }) => {
         let response
         let userData
         
+        if (isLogin || userInfo) {
+            return;
+        }
+
         if (location.pathname === '/login' || location.pathname === '/oauth2') {
             return;
         }
