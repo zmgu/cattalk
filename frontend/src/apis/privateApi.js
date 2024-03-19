@@ -1,4 +1,5 @@
 import axios from 'axios';
+import publicApi from './publicApi';
 
 const privateApi = axios.create({
     baseURL: 'http://localhost:8888'
@@ -6,9 +7,13 @@ const privateApi = axios.create({
 
 // 헤더에 엑세스 토큰을 추가한 뒤 api 요청
 privateApi.interceptors.request.use(config => {
-    const token = localStorage.getItem('Authorization');
-    if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
+    const accessToken = localStorage.getItem('Authorization');
+    console.log(`privateApi 시작`);
+    console.log(`localStorage에서 가져온 accessToken : ${accessToken}`);
+    
+    if (accessToken) {
+        console.log(`accessToken 헤더에 담아 요청 시도`);
+        config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
     return config;
 }, error => {
@@ -17,7 +22,7 @@ privateApi.interceptors.request.use(config => {
 
 // api 요청 시 마다 엑세스 토큰이 만료되었을 경우 리프래시 토큰으로 재발급 요청
 privateApi.interceptors.response.use(response => {
-    console.log('privateApi 정상 인터셉터 리스폰스 처리');
+    console.log('privateApi 정상 처리 완료');
 
     return response;
 
@@ -26,27 +31,29 @@ privateApi.interceptors.response.use(response => {
     const originalRequest = error.config;
 
     if (error.response.status === 401 && !originalRequest._retry) {
+        console.log('privateApi 예외처리 시작');
 
         originalRequest._retry = true;
 
         try {
         // 엑세스 토큰 재발급
-        const response = await privateApi.post('/auth/reissue', {}, { withCredentials: true });
+        const response = await publicApi.post('/auth/reissue', {}, { withCredentials: true });
         const accessToken = response.headers['authorization'];
         console.log(`privateApi 통해 발급한 accessToken : ${accessToken}`);
-
+        
+        localStorage.removeItem('Authorization');
         localStorage.setItem('Authorization', accessToken);
 
         // 재발급 받은 엑세스 토큰으로 원래 요청 재시도
         originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
-
-        return privateApi(originalRequest);
+        
+        return publicApi(originalRequest);
 
         } catch (refreshError) {
 
         // 리프레시 토큰 만료 또는 에러 처리
         console.error('리프래시 토큰 만료 또는 에러 ', refreshError);
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem('Authorization');
 
         window.location.href = '/login'; // 로그인 페이지로 리다이렉션
 
