@@ -1,12 +1,12 @@
 package com.ex.backend.config;
 
+import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.jwt.filter.JwtRequestFilter;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import com.ex.backend.security.oauth2.handler.OAuth2SuccessHandler;
 import com.ex.backend.user.service.CustomOAuth2UserService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.ex.backend.user.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,13 +21,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -59,7 +57,7 @@ public class SecurityConfig {
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
                     configuration.setMaxAge(3600L);
 
-                    List<String> exposedHeaders = Arrays.asList("Set-Cookie", "Authorization");
+                    List<String> exposedHeaders = Arrays.asList("Set-Cookie", JwtConstants.AUTHORIZATION);
                     configuration.setExposedHeaders(exposedHeaders); // 리스트 안에 값만 헤더 이름으로 읽을 수 있음
 
                     return configuration;
@@ -87,9 +85,9 @@ public class SecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/login").permitAll()
-                        .requestMatchers("/auth/reissue").permitAll()
+                        .requestMatchers("/auth/reissue").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/oauth2").permitAll()
-                        .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
         );
