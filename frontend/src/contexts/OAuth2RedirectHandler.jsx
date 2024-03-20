@@ -15,14 +15,8 @@ const OAuth2RedirectHandler = () => {
             console.log('OAuth2RedirectHandler 시작')
             const response = await publicApi.post('/auth/reissue', {}, { withCredentials: true });
 
-            console.log('응답 헤더:', response.headers);
-            const accessToken = response.headers['authorization'];
-
-            console.log(`OAuth2RedirectHandler에서 발급한 accessToken : ${accessToken}`);
-            
+            const accessToken = response.headers['authorization'];        
             localStorage.setItem('Authorization', accessToken);
-            const saveCheck = localStorage.getItem('Authorization');
-            console.log(`localStorage에 저장했는지 확인 accessToken : ${saveCheck}`);
 
             navigate('/');
         } catch (error) {
