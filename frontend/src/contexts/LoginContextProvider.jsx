@@ -2,14 +2,13 @@
  *  로그인 
  *  ✅ 로그인 체크
  *  ✅ 로그인
- *  ✅ 로그아웃
- *  
  *  🔐 로그인 세팅
+ *  ✅ 로그아웃
  *  🔓 로그아웃 세팅
  */ 
 
 import React, { createContext, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as auth from '../apis/auth';
 
 export const LoginContext = createContext();
@@ -22,13 +21,14 @@ const LoginContextProvider = ({ children }) => {
     const [isLogin, setLogin] = useState(false);
 
     // 유저 정보
-    const [userInfo, setUserInfo] = useState(null)
+    const [userInfo, setUserInfo] = useState(null);
 
     const location = useLocation();
-    /* 
-        ✅ 로그인 체크
-    */
+    const navigate = useNavigate();
+
+    // ✅ 로그인 체크
     const loginCheck = async () => {
+        console.log('loginCheck 실행 중');
 
         let response
         let userData
@@ -45,13 +45,10 @@ const LoginContextProvider = ({ children }) => {
             유저정보 요청
             엑세스 토큰과 리프래시 토큰이 유효하다면 가져옴
         */
-
         try {
             response = await auth.info();
             userData = response.data;
-        
-            console.log('LoginContextProvider 실행 중');
-        
+                
             // 객체를 문자열로 변환하여 체크하는 로직을 추가
             const responseDataAsString = typeof userData === 'string' ? userData : JSON.stringify(userData);
             
@@ -86,13 +83,12 @@ const LoginContextProvider = ({ children }) => {
         loginSetting(userData)
     }
 
-
     // 🔐 로그인 세팅
     const loginSetting = (userData) => {
 
         const { name, nickname, role } = userData
 
-        console.log(`username : ${name}`);
+        console.log(`name : ${name}`);
         console.log(`nickname : ${nickname}`);
         console.log(`role : ${role}`);
 
@@ -103,15 +99,47 @@ const LoginContextProvider = ({ children }) => {
         const updatedUserInfo = {name, nickname, role}
         setUserInfo(updatedUserInfo)
 
-        // 👮‍♀️✅ 권한정보 세팅
-        const updatedRoles = { isUser : false, isAmdin : false }
-        
-
-            if( role == 'ROLE_USER' ) updatedRoles.isUser = true;
-            if( role == 'ROLE_ADMIN' ) updatedRoles.isAdmin = true;
-
-        // setRoles(updatedRoles)
     }
+
+    // 🔓 로그아웃
+    const logout = (force=false) => {
+
+        if( force ) {
+            // 로그아웃 세팅
+            logoutSetting()
+        
+            navigate("/login")
+            return
+        }        
+
+        // const check = window.confirm(`로그아웃하시겠습니까?`)
+
+        window.confirm("로그아웃하시겠습니까?", "로그아웃을 진행합니다.", "warning",
+            (result) => {
+                if( result.isConfirmed ) {
+                    // 로그아웃 세팅
+                    logoutSetting()
+
+                    // 메인 페이지로 이동
+                    navigate("/login")
+                }
+            }
+        )
+
+    }
+
+        // 로그아웃 세팅
+        const logoutSetting = async () => {
+            
+            await auth.logout();
+    
+            // 🔐❌ 로그인 여부 : false
+            setLogin(false)
+    
+            // 👩‍💼❌ 유저 정보 초기화
+            setUserInfo(null)
+    
+        }
 
     useEffect( () => {
     
