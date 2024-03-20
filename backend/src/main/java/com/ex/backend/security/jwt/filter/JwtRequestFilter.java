@@ -1,5 +1,6 @@
 package com.ex.backend.security.jwt.filter;
 
+import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import com.ex.backend.user.dto.PrincipalDetails;
 import com.ex.backend.user.dto.User;
@@ -15,8 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Enumeration;
 import java.util.logging.Logger;
 
 @RequiredArgsConstructor
@@ -31,60 +30,44 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // 헤더에서 accessToken 추출
         String accessToken = request.getHeader("authorization");
-        logger.info("accessToken :" + accessToken);
         String requestURI = request.getRequestURI();
 
-        // 엑세스 토큰이 없고, 재발급 경로 요청이었을 경우는 다음 필터로 이동
         if (accessToken == null && requestURI.equals("/auth/reissue")) {
+            // 엑세스 토큰이 없고, 재발급 경로 요청이었을 경우 다음 필터로 이동
             filterChain.doFilter(request, response);
             return;
+
         } else if(accessToken == null && !requestURI.equals("/auth/reissue")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 설정
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("{\"error\": \"No access token provided\"}");
-            return;
-        }
-
-        accessToken = accessToken.substring(7).trim();
-
-        // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
-        try {
-            jwtProvider.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
-
-            //response body
-            PrintWriter writer = response.getWriter();
-            writer.print("access token expired");
-
-            //response status code
+            // 엑세스 토큰이 없고, 재발급 경로 요청이 아니었을 경우 상태 코드 401
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        // 토큰이 access인지 확인 (발급시 페이로드에 명시)
-        String category = jwtProvider.getCategory(accessToken);
+        // 엑세스 토큰 접두사 제거
+        accessToken = accessToken.substring(7).trim();
+        logger.info("accessToken :" + accessToken);
 
-        if (!category.equals("access")) {
-
-            //response body
-            PrintWriter writer = response.getWriter();
-            writer.print("invalid access token");
-
-            //response status code
+        // 토큰 만료 여부 확인
+        try {
+            jwtProvider.isExpired(accessToken);
+        } catch (ExpiredJwtException e) {
+            logger.info("jwtProvider.isExpired(accessToken): accessToken 만료됨");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         // username, role 값을 획득
         String username = jwtProvider.getUsername(accessToken);
+        String name = jwtProvider.getName(accessToken);
         String role = jwtProvider.getRole(accessToken);
 
         User user = new User();
         user.setUsername(username);
+        user.setName(name);
         user.setRole(role);
         PrincipalDetails customUserDetails = new PrincipalDetails(user);
 
+        // 스프링에 유저정보 저장
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
