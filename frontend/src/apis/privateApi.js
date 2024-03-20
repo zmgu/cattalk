@@ -13,7 +13,7 @@ privateApi.interceptors.request.use(config => {
     
     if (accessToken) {
         console.log(`accessToken 헤더에 담아 요청 시도`);
-        config.headers['Authorization'] = `Bearer ${accessToken}`;
+        config.headers['Authorization'] = accessToken;
     }
     return config;
 }, error => {
