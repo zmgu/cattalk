@@ -1,5 +1,6 @@
 package com.ex.backend.security.jwt.provider;
 
+import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.jwt.props.JwtProps;
 
 import io.jsonwebtoken.*;
@@ -9,7 +10,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.logging.Logger;
 
 @Component
 public class JwtProvider {
@@ -23,19 +23,21 @@ public class JwtProvider {
         this.secretKey = new SecretKeySpec(jwtProps.getSecretKey().getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String createToken(String category,String username, String role, Long expiredTime) {
+    public String createToken(String category, String username, String name, String role) {
+        long expiredTime =
+                category.equals(JwtConstants.ACCESS_TOKEN) ? jwtProps.getAccessExpiredTime() : jwtProps.getRefreshExpiredTime();
 
         // token 토큰 생성
         String token = Jwts.builder()
                 .signWith(secretKey)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredTime))
-                .claim("category", category)
+                .claim("name", name)
                 .claim("username", username)
                 .claim("role", role)
                 .compact();
 
-        return token;
+        return category.equals(JwtConstants.ACCESS_TOKEN) ? JwtConstants.TOKEN_PREFIX + token : token;
     }
 
     public String getUsername(String token) {
@@ -48,9 +50,9 @@ public class JwtProvider {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
-    public String getCategory(String token) {
+    public String getName(String token) {
 
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("name", String.class);
     }
 
     public Boolean isExpired(String token) {
