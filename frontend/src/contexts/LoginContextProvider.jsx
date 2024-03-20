@@ -149,7 +149,7 @@ const LoginContextProvider = ({ children }) => {
     }, [location.pathname])
 
     return ( 
-        <LoginContext.Provider value={ {isLogin, userInfo, loginCheck} }>
+        <LoginContext.Provider value={ {isLogin, userInfo, loginCheck, logout} }>
             {children}
         </LoginContext.Provider>
     )

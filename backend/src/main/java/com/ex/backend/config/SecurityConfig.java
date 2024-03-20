@@ -5,7 +5,6 @@ import com.ex.backend.security.jwt.filter.JwtRequestFilter;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import com.ex.backend.security.oauth2.handler.OAuth2SuccessHandler;
 import com.ex.backend.user.service.CustomOAuth2UserService;
-import com.ex.backend.user.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
