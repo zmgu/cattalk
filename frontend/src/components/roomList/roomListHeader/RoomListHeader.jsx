@@ -22,7 +22,6 @@ const RoomListHeader = () => {
                     <FontAwesomeIcon icon={faGear} className='roomlist-header-icon' />
                 </button>
                 
-
                 <div className={`roomlist-options ${showList ? 'show' : ''}`}>
                     <button>최신 메시지 순</button>
                     <button>안 읽은 메시지 순</button>
