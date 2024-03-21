@@ -114,32 +114,26 @@ const LoginContextProvider = ({ children }) => {
 
         // const check = window.confirm(`로그아웃하시겠습니까?`)
 
-        window.confirm("로그아웃하시겠습니까?", "로그아웃을 진행합니다.", "warning",
-            (result) => {
-                if( result.isConfirmed ) {
-                    // 로그아웃 세팅
-                    logoutSetting()
-
-                    // 메인 페이지로 이동
-                    navigate("/login")
-                }
-            }
-        )
+        if (window.confirm("로그아웃하시겠습니까?")) {
+            console.log('로그아웃 진행 중');
+            // 로그아웃 세팅
+            logoutSetting();
+        
+            // 메인 페이지로 이동
+            navigate("/login");
+        }
 
     }
 
-        // 로그아웃 세팅
-        const logoutSetting = async () => {
-            
-            await auth.logout();
-    
-            // 🔐❌ 로그인 여부 : false
-            setLogin(false)
-    
-            // 👩‍💼❌ 유저 정보 초기화
-            setUserInfo(null)
-    
-        }
+    // 로그아웃 세팅
+    const logoutSetting = async () => {
+        console.log(' logoutSetting 동작중');
+        localStorage.removeItem('Authorization'); // 엑세스 토큰 제거
+        await auth.logout();                      // 쿠키에 있는 리프래시 토큰 제거
+        setLogin(false)                           // 로그인 여부 : false
+        setUserInfo(null)                         // 유저 정보 초기화
+
+    }
 
     useEffect( () => {
     
