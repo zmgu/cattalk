@@ -1,6 +1,7 @@
 package com.ex.backend.user.service;
 
 import com.ex.backend.security.oauth2.dto.GoogleResponse;
+import com.ex.backend.security.oauth2.dto.KakaoResponse;
 import com.ex.backend.security.oauth2.dto.NaverResponse;
 import com.ex.backend.security.oauth2.dto.OAuth2Response;
 import com.ex.backend.user.dto.PrincipalDetails;
@@ -38,8 +39,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
         }
-        else {
+        else if (registrationId.equals("kakao")) {
 
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+        }
+        else {
             return null;
         }
 
