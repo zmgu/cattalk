@@ -10,7 +10,7 @@ function App() {
     <BrowserRouter>
       <LoginContextProvider>
         <Routes>
-            <Route path='/' element={ <Main /> } />
+            <Route path='*' element={ <Main /> } />
             <Route path="/login" element={ <Login /> }/>
             <Route path='/oauth2' element={<OAuth2RedirectHandler />} />  
         </Routes>
