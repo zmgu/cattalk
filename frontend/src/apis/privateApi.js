@@ -37,15 +37,15 @@ privateApi.interceptors.response.use(response => {
 
         try {
         // 엑세스 토큰 재발급
+        localStorage.removeItem('Authorization');
         const response = await publicApi.post('/auth/reissue', {}, { withCredentials: true });
         const accessToken = response.headers['authorization'];
         console.log(`privateApi 통해 발급한 accessToken : ${accessToken}`);
         
-        localStorage.removeItem('Authorization');
         localStorage.setItem('Authorization', accessToken);
 
         // 재발급 받은 엑세스 토큰으로 원래 요청 재시도
-        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+        originalRequest.headers['Authorization'] = accessToken;
         
         return publicApi(originalRequest);
 
