@@ -40,10 +40,10 @@
     cursor: pointer;
     color: #5581d8;
     transition: 0.3s;
-    filter: drop-shadow(0.5px 0.5px 0.5px rgba(63, 106, 192, 0.2))
-            drop-shadow(-0.5px -0.5px 0.5px rgba(63, 106, 192, 0.2))
-            drop-shadow(-0.5px 0.5px 0.5px rgba(63, 106, 192, 0.2))
-            drop-shadow(0.5px -0.5px 0.5px rgba(63, 106, 192, 0.2));
+    filter: drop-shadow(0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
+            drop-shadow(-0.5px -0.5px 0.5px rgba(146, 161, 192, 0.2))
+            drop-shadow(-0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
+            drop-shadow(0.5px -0.5px 0.5px rgba(146, 161, 192, 0.2));
 }
 .roomlist-header-icon:not(:hover) {
     transition: 0.6s;
