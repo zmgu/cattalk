@@ -1,6 +1,9 @@
 package com.ex.backend.config;
 
+import com.ex.backend.redis.RefreshTokenService;
 import com.ex.backend.security.jwt.constants.JwtConstants;
+import com.ex.backend.security.jwt.cookie.CookieUtil;
+import com.ex.backend.security.jwt.filter.CustomLogoutFilter;
 import com.ex.backend.security.jwt.filter.JwtRequestFilter;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import com.ex.backend.security.oauth2.handler.OAuth2SuccessHandler;
@@ -19,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Arrays;
@@ -34,6 +38,8 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
+    private final CookieUtil cookieUtil;
 
     // 시큐리티 설정
     @Bean
@@ -67,8 +73,8 @@ public class SecurityConfig {
 //                .addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtProvider)
 //                        , UsernamePasswordAuthenticationFilter.class)
 
-                .addFilterBefore(new JwtRequestFilter(jwtProvider)
-                        , UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRequestFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomLogoutFilter(jwtProvider, refreshTokenService, cookieUtil), LogoutFilter.class)
         ;
         //oauth2
         http
@@ -76,8 +82,8 @@ public class SecurityConfig {
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
-                        .failureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error=true"))
                 );
+
         // 인가 설정 ✅
         http.authorizeHttpRequests( authorizeRequests ->
                 authorizeRequests
