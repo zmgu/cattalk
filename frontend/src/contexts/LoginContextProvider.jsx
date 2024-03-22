@@ -60,16 +60,8 @@ const LoginContextProvider = ({ children }) => {
             console.log(`로그인 에러 : ${error}`);
             
             const errorStatus = error.response ? error.response.status : '상태 코드 불명';
-            var result = window.confirm("로그인 실패");
+            alert('로그인 시간이 만료되었습니다. 다시 로그인해주세요.');
 
-            if (result === true) {
-                console.log("로그인 페이지 이동");
-            } else {
-                console.log("로그 확인하기");
-            }
-            console.log(`로그인 에러 상태 : ${errorStatus}`);
-            
-            // 에러 발생 시 처리 로직
             return;
         }
 
