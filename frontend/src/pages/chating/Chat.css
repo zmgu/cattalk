@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+    background-color: #eeeeee;
+    font-family: "Noto Sans KR", sans-serif;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    height: 570px;
+    width: 320px;
+    border: rgb(220, 220, 220) solid 1px;
+    border-radius: 1rem;
+    background-color: white;
+    box-sizing: border-box;
+}
+
+/* =================== 위 css 옮길 예정 =================== */
+
+.chat-header {
+    width: 100%;
+    height: 70px;
+    background: rgb(169,223,226);
+    background: linear-gradient(141deg, rgba(169,223,226,1) 0%, rgba(209,213,250,1) 92%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.chat-message {
+    flex-grow: 1;
+    overflow-y: auto; /* 내용이 넘치면 스크롤 생성 */
+}
+
+.chat-input {
+    display: flex;
+    align-items: flex-start; /* 내부 요소의 높이를 맞춤 */
+    height: 50px; /* chat-input의 기본 높이 */
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #f5f5f5; /* 취향에 따라 조정 가능 */
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.chat-input textarea {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 0 10px;
+    resize: none; /* 사용자가 수동으로 크기 조정 못하게 함 */
+    overflow-y: hidden; /* 자동 높이 조정 시 스크롤바 숨김 */
+}
+
+.file-attach-button, .send-message-button {
+    border: none;
+    background-color: #eeeeee; /* 취향에 따라 조정 가능 */
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.file-attach-button:hover, .send-message-button:hover {
+    background-color: #ddd; /* 호버 시 배경 색상 변경 */
+}
