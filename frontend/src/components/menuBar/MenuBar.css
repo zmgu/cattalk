@@ -17,6 +17,17 @@
 
 .menu-link {
     text-decoration: none;
+    cursor: pointer;
+}
+
+.menu-link:hover .menubar-icon {
+    cursor: pointer;
+    color: #5581d8;
+    transition: 0.3s;
+    filter: drop-shadow(0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
+            drop-shadow(-0.5px -0.5px 0.5px rgba(146, 161, 192, 0.2))
+            drop-shadow(-0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
+            drop-shadow(0.5px -0.5px 0.5px rgba(146, 161, 192, 0.2));
 }
 
 .menubar-icon {
@@ -24,4 +35,8 @@
     font-size: 26px;
     margin: 20px 20px 16px 20px;
     color: #5c6898;
+}
+
+.menubar-icon:not(:hover) {
+    transition: 0.6s;
 }
