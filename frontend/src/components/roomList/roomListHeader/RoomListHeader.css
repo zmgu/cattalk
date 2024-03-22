@@ -34,25 +34,27 @@
     margin: 0;
     padding: 0;
     background-color: transparent;
+    cursor: pointer; /* 버튼 전체에 적용되어야 하는 cursor 속성 */
 }
 
-.roomlist-header-icon:hover {
-    cursor: pointer;
+/* 버튼에 호버될 때 아이콘의 스타일을 변경합니다. */
+.roomlist-header-btn:hover .roomlist-header-icon {
     color: #5581d8;
-    transition: 0.3s;
+    transition: color 0.3s, filter 0.3s; /* 수정: transition 속성을 명확히 지정 */
     filter: drop-shadow(0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
             drop-shadow(-0.5px -0.5px 0.5px rgba(146, 161, 192, 0.2))
             drop-shadow(-0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
             drop-shadow(0.5px -0.5px 0.5px rgba(146, 161, 192, 0.2));
 }
+
 .roomlist-header-icon:not(:hover) {
     transition: 0.6s;
 }
 
 .roomlist-header-icon {
     box-sizing: border-box;
-    font-size: 26px;
-    margin: 30px 10px 5px 10px;
+    font-size: 22px;
+    margin: 30px 8px 5px 10px;
     color: #5c6898;
 }
 
@@ -79,7 +81,7 @@
 }
 
 .roomlist-options button {
-    margin-bottom: 5px; /* 버튼 간격을 조정합니다. */
+    margin-bottom: 5px;
     border: none;
     background-color: #ffffff;
     cursor: pointer;
@@ -87,5 +89,5 @@
 }
 
 .roomlist-options button:hover {
-    background-color: #e0e0e0; /* 버튼에 마우스를 올렸을 때 배경색 변경합니다. */
+    background-color: #e0e0e0;
 }
