@@ -32,6 +32,13 @@ body {
     justify-content: space-between;
 }
 
+.chat-header-icon {
+    box-sizing: border-box;
+    font-size: 22px;
+    margin: 30px 8px 5px 10px;
+    color: #5c6898;
+}
+
 .chat-message {
     flex-grow: 1;
     overflow-y: auto; /* 내용이 넘치면 스크롤 생성 */
@@ -46,9 +53,13 @@ body {
     background-color: #f5f5f5; /* 취향에 따라 조정 가능 */
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
+    background: white;
+    background: rgb(209,213,250);
+    background: linear-gradient(141deg, rgba(209,213,250,1) 0%, rgba(169,223,226,1) 92%);
 }
 
-.chat-input textarea {
+.chat-input .message-input {
+    height: 18px;
     flex-grow: 1;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -58,14 +69,29 @@ body {
     overflow-y: hidden; /* 자동 높이 조정 시 스크롤바 숨김 */
 }
 
+.message-input:focus {
+    outline: none;
+}
+
 .file-attach-button, .send-message-button {
     border: none;
-    background-color: #eeeeee; /* 취향에 따라 조정 가능 */
+    background-color: transparent; /* 취향에 따라 조정 가능 */
     cursor: pointer;
-    padding: 5px 10px;
+    padding: 3px 10px;
     border-radius: 4px;
+    font-size: 20px;
+    color: #5c6898;
 }
 
 .file-attach-button:hover, .send-message-button:hover {
-    background-color: #ddd; /* 호버 시 배경 색상 변경 */
+    color: #5581d8;
+    transition: color 0.3s, filter 0.3s; /* 수정: transition 속성을 명확히 지정 */
+    filter: drop-shadow(0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
+            drop-shadow(-0.5px -0.5px 0.5px rgba(146, 161, 192, 0.2))
+            drop-shadow(-0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
+            drop-shadow(0.5px -0.5px 0.5px rgba(146, 161, 192, 0.2));
+}
+
+.file-attach-button:not(:hover), .send-message-button:not(:hover) {
+    transition: 0.6s;
 }
