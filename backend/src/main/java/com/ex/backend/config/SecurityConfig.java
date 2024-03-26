@@ -40,7 +40,6 @@ public class SecurityConfig {
     private final RefreshTokenService refreshTokenService;
     private final CookieUtil cookieUtil;
 
-    // 시큐리티 설정
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -48,7 +47,8 @@ public class SecurityConfig {
         http
                 .csrf((csrf) -> csrf.disable())
                 .formLogin((login) -> login.disable())
-                .httpBasic((basic) -> basic.disable());
+                .httpBasic((basic) -> basic.disable())
+        ;
 
         http
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
@@ -75,6 +75,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtRequestFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtProvider, refreshTokenService, cookieUtil), LogoutFilter.class)
         ;
+
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
