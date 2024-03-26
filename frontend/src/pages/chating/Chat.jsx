@@ -2,7 +2,7 @@ import './Chat.css'
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperclip, faPaperPlane, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faPaperclip, faPaperPlane, faArrowLeft, faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
 
 const Chat = () => {
 
@@ -58,11 +58,20 @@ const Chat = () => {
     return (
         <div className='chat-container'  ref={chatContainerRef}>
             <div className='chat-header'>
-                <Link to='/'><FontAwesomeIcon icon= {faArrowLeft} className='chat-header-icon' /></Link>
+                <div className='chat-header-left'>
+                    <Link to='/'><FontAwesomeIcon icon= {faArrowLeft} className='chat-header-icon' /></Link>
+                </div>
+                <div className='chat-header-center'>
+                    <div className='temp-img'></div>
+                </div>
+                <div className='chat-header-right'>
+                    <FontAwesomeIcon icon= {faMagnifyingGlass} className='chat-header-icon' />
+                    <FontAwesomeIcon icon= {faBars} className='chat-header-icon' />
+                </div>
             </div>
             <div className='chat-message' ref={chatMessageRef}></div>
             <div className='chat-input' ref={chatInputRef}>
-            <button className='file-attach-button'><FontAwesomeIcon icon= {faPaperclip} /></button>
+                <button className='file-attach-button'><FontAwesomeIcon icon= {faPaperclip} /></button>
                     <textarea
                         className='message-input'
                         value={message}
