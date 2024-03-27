@@ -69,7 +69,13 @@ const Chat = () => {
                     <FontAwesomeIcon icon= {faBars} className='chat-header-icon' />
                 </div>
             </div>
-            <div className='chat-message' ref={chatMessageRef}></div>
+            <div className='chat-message' ref={chatMessageRef}>
+
+                <div className=''></div>
+                <div className=''></div>
+                <div className=''></div>
+
+            </div>
             <div className='chat-input' ref={chatInputRef}>
                 <button className='file-attach-button'><FontAwesomeIcon icon= {faPaperclip} /></button>
                     <textarea
