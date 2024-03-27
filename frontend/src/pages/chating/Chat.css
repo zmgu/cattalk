@@ -58,6 +58,58 @@
     background-color: #F9F9F9;
 }
 
+/* 말풍선 ui */
+/* 내가 친 채팅 */
+.my-chat {
+	position: relative;
+	background: #ffeb33;
+	border-radius: .4em;
+}
+
+.my-chat:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-left-color: #ffeb33;
+	border-right: 0;
+	border-top: 0;
+	margin-top: -10px;
+	margin-right: -20px;
+}
+
+/* 상대방이 친 채팅 */
+.another-chat {
+	position: relative;
+	background: #33ccff;
+	border-radius: .4em;
+}
+
+.another-chat:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-right-color: #33ccff;
+	border-left: 0;
+	border-top: 0;
+	margin-top: -10px;
+	margin-left: -20px;
+}
+
+
+
+
+
+
+
+
 .chat-input {
     display: flex;
     align-items: flex-start; /* 내부 요소의 높이를 맞춤 */
