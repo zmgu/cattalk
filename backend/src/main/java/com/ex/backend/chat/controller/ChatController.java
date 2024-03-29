@@ -1,26 +1,30 @@
 package com.ex.backend.chat.controller;
 
-import com.ex.backend.chat.dto.ChatMessage;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.stereotype.Controller;
+import com.ex.backend.chat.domain.ChatRoom;
+import com.ex.backend.chat.dto.CreateChatRoomDto;
+import com.ex.backend.chat.service.ChatRoomService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("/chat")
+@RequiredArgsConstructor
 public class ChatController {
 
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
-        return chatMessage;
-    }
+    private final ChatRoomService chatRoomService;
 
-    @MessageMapping("/chat.addUser")
-    @SendTo("/topic/public")
-    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        // 사용자를 웹소켓 세션에 추가
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-        return chatMessage;
+    @PostMapping("/room")
+    public ResponseEntity<ChatRoom> createRoom(@RequestBody CreateChatRoomDto request) {
+        try {
+            ChatRoom createdRoom = chatRoomService.createRoom(request.getUserId(), request.getPartnerName());
+
+            return ResponseEntity.ok(createdRoom);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
