@@ -17,7 +17,7 @@ public class RefreshTokenService {
 
     public void createRefreshToken(RefreshToken refreshToken) {
         String key = generateKey(refreshToken.getRefreshToken());
-        redisTemplate.opsForValue().set(key, refreshToken.getUsername());
+        redisTemplate.opsForValue().set(key, refreshToken.getUserId());
     }
 
     public boolean existRefreshToken(String refreshToken) {
