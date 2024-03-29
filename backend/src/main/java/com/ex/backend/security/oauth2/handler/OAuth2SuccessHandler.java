@@ -8,6 +8,8 @@ import com.ex.backend.security.jwt.dto.RefreshToken;
 import com.ex.backend.security.jwt.props.JwtProps;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import com.ex.backend.user.dto.PrincipalDetails;
+import com.ex.backend.user.mapper.UserMapper;
+import com.ex.backend.user.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,7 +38,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         PrincipalDetails user = (PrincipalDetails) authentication.getPrincipal();
-        String username = user.getUsername();
+
+        Long userId = user.getUserId();
         String name = user.getName();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -44,12 +47,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String refreshToken = jwtProvider.createToken(JwtConstants.REFRESH_TOKEN ,username, name, role);
+        String refreshToken = jwtProvider.createToken(JwtConstants.REFRESH_TOKEN, userId, name, role);
 
         logger.info("refreshToken: " + refreshToken);
 
         // Redis에 refreshToken 저장
-        refreshTokenService.createRefreshToken(new RefreshToken(refreshToken, username));
+        refreshTokenService.createRefreshToken(new RefreshToken(refreshToken, String.valueOf(userId)));
 
         response.addCookie(cookieUtil.createCookie(JwtConstants.REFRESH_TOKEN, refreshToken));
         response.setStatus(HttpStatus.OK.value());
