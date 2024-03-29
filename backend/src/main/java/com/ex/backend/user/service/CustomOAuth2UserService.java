@@ -29,7 +29,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2Response oAuth2Response = null;
+        OAuth2Response oAuth2Response;
 
         if (registrationId.equals("naver")) {
 
@@ -67,9 +67,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 principalDetails = new PrincipalDetails(user);
             }
             else {
-
                 existData.setEmail(oAuth2Response.getEmail());
-                existData.setName(oAuth2Response.getName());
 
                 userMapper.update(existData);
 
