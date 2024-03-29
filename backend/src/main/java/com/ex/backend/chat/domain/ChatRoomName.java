@@ -7,10 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class CustomChatRoomName {
+public class ChatRoomName {
 
-    private final String userId;
     private final String roomId;
-    private String customRoomName;
+    private final Long userId;
+    private String roomName;
 
 }
