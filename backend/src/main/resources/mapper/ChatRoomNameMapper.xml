@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ex.backend.chat.mapper.ChatRoomNameMapper">
+
+    <resultMap type="ChatRoomName" id="ChatRoomNameMap">
+        <result property="roomId" column="roomid" />
+        <result property="userId" column="userid" />
+        <result property="roomName" column="roomname" />
+
+    </resultMap>
+
+    <insert id="createChatRoomName">
+        INSERT INTO chatroomname(userid, roomid, roomname)
+        VALUES (#{userId}, #{rooId}, #{roomName})
+    </insert>
+
+</mapper>
