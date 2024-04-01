@@ -23,7 +23,7 @@ public class JwtProvider {
         this.secretKey = new SecretKeySpec(jwtProps.getSecretKey().getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String createToken(String category, Long userId, String name, String role) {
+    public String createToken(String category, Long userId, String nickname, String role) {
         long expiredTime =
                 category.equals(JwtConstants.ACCESS_TOKEN) ? jwtProps.getAccessExpiredTime() : jwtProps.getRefreshExpiredTime();
 
@@ -33,7 +33,7 @@ public class JwtProvider {
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredTime))
                 .claim("userid", userId)
-                .claim("name", name)
+                .claim("nickname", nickname)
                 .claim("role", role)
                 .compact();
 
@@ -42,6 +42,11 @@ public class JwtProvider {
 
     public Long getUserId(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
+    }
+
+    public String getNickname(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("nickname", String.class);
     }
 
     public String getUsername(String token) {

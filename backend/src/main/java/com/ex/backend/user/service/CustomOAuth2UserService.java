@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
@@ -50,33 +51,40 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
 
-        PrincipalDetails principalDetails = null;
-
-        try {
-            User existData = userMapper.findByUsername(username);
-
-            if (existData == null) {
-
-                User user = new User();
-                user.setUsername(username);
-                user.setEmail(oAuth2Response.getEmail());
-                user.setName(oAuth2Response.getName());
-                user.setRole("ROLE_USER");
-                userMapper.oauthSave(user);
-
-                principalDetails = new PrincipalDetails(user);
-            }
-            else {
-                existData.setEmail(oAuth2Response.getEmail());
-
-                userMapper.update(existData);
-
-                principalDetails = new PrincipalDetails(existData);
-            }
-        } catch (Exception e) {
-            logger.severe("에러 내용 : " + e.getMessage());
-        }
+        PrincipalDetails principalDetails = new PrincipalDetails(findByUsername(oAuth2Response, username));
 
         return principalDetails;
+    }
+
+    public User findByUsername(OAuth2Response oAuth2Response, String username) {
+
+        User userInfo = null;
+
+        try {
+            userInfo = userMapper.findByUsername(username);
+
+            if (userInfo == null) {
+
+                User newUser = User.builder()
+                        .username(username)
+                        .email(oAuth2Response.getEmail())
+                        .nickname(oAuth2Response.getName()) // 초기 닉네임은 사용자의 이름으로 설정
+                        .name(oAuth2Response.getName())
+                        .role("ROLE_USER")
+                        .build();
+
+                userMapper.oauthSave(newUser);
+
+                userInfo = userMapper.findByUsername(username);
+            } else {
+
+                userInfo.setEmail(oAuth2Response.getEmail());
+                userMapper.update(userInfo);
+            }
+        } catch (Exception e) {
+
+            logger.log(Level.SEVERE, "데이터베이스 작업 중 예외 발생 ", e);
+        }
+        return userInfo;
     }
 }

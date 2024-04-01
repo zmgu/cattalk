@@ -23,6 +23,8 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         return user.getId();
     }
 
+    public String getNickname() { return user.getNickname(); }
+
     @Override
     public String getName() {
         return user.getName();

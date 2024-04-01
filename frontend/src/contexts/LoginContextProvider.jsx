@@ -78,9 +78,9 @@ const LoginContextProvider = ({ children }) => {
     // 🔐 로그인 세팅
     const loginSetting = (userData) => {
 
-        const { name, nickname, role } = userData
+        const { userid, nickname, role } = userData
 
-        console.log(`name : ${name}`);
+        console.log(`userid : ${userid}`);
         console.log(`nickname : ${nickname}`);
         console.log(`role : ${role}`);
 
@@ -88,7 +88,7 @@ const LoginContextProvider = ({ children }) => {
         setLogin(true)
         
         // 👩‍💼✅ 유저정보 세팅
-        const updatedUserInfo = {name, nickname, role}
+        const updatedUserInfo = {userid, nickname, role}
         setUserInfo(updatedUserInfo)
 
     }

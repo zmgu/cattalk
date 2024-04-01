@@ -58,13 +58,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // username, role 값을 획득
         Long userId = jwtProvider.getUserId(accessToken);
-        String name = jwtProvider.getName(accessToken);
+        String nickname = jwtProvider.getNickname(accessToken);
         String role = jwtProvider.getRole(accessToken);
 
-        User user = new User();
-        user.setId(userId);
-        user.setName(name);
-        user.setRole(role);
+        User user = User.builder()
+                .id(userId)
+                .nickname(nickname)
+                .role(role)
+                .build();
+
         PrincipalDetails customUserDetails = new PrincipalDetails(user);
 
         // 스프링에 유저정보 저장

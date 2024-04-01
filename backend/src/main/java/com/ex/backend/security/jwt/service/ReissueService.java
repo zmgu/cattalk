@@ -27,7 +27,6 @@ public class ReissueService {
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshToken = cookieUtil.getCookieValue(request, JwtConstants.REFRESH_TOKEN);
-
         if (refreshToken == null) {
             logger.info(" refreshToken null ");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -50,12 +49,12 @@ public class ReissueService {
         }
 
         Long userId = jwtProvider.getUserId(refreshToken);
-        String name = jwtProvider.getName(refreshToken);
+        String nickname = jwtProvider.getNickname(refreshToken);
         String role = jwtProvider.getRole(refreshToken);
 
         // 엑세스 토큰, 리프래시 토큰 생성
-        String accessToken = jwtProvider.createToken(JwtConstants.ACCESS_TOKEN, userId, name, role);
-        String newRefreshToken = jwtProvider.createToken(JwtConstants.REFRESH_TOKEN, userId, name, role);
+        String accessToken = jwtProvider.createToken(JwtConstants.ACCESS_TOKEN, userId, nickname, role);
+        String newRefreshToken = jwtProvider.createToken(JwtConstants.REFRESH_TOKEN, userId, nickname, role);
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
         refreshTokenService.deleteRefreshToken(refreshToken);
