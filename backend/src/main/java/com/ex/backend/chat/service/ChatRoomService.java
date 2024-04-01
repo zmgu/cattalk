@@ -2,7 +2,8 @@ package com.ex.backend.chat.service;
 
 import com.ex.backend.chat.domain.ChatRoom;
 import com.ex.backend.chat.domain.ChatRoomName;
-import com.ex.backend.chat.mapper.ChatMapper;
+import com.ex.backend.chat.mapper.ChatRoomMapper;
+import com.ex.backend.chat.mapper.ChatRoomNameMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
-    private final ChatMapper chatMapper;
+    private final ChatRoomMapper chatRoomMapper;
+    private final ChatRoomNameMapper chatRoomNameMapper;
 
     public ChatRoom createRoom(Long userId,String partnerName) throws Exception {
 
@@ -24,7 +26,7 @@ public class ChatRoomService {
                 .createdDate(new Date(System.currentTimeMillis()))
                 .build();
 
-        chatMapper.createRoom(room);
+        chatRoomMapper.createChatRoom(room);
 
         ChatRoomName chatRoomName = ChatRoomName.builder()
                 .roomId(roomId)
@@ -32,7 +34,7 @@ public class ChatRoomService {
                 .roomName(partnerName)
                 .build();
 
-        chatMapper.createRoomName(chatRoomName);
+        chatRoomNameMapper.createChatRoomName(chatRoomName);
 
         return room;
     }
