@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ex.backend.chat.mapper.ChatRoomMapper">
+
+    <resultMap type="ChatRoom" id="ChatRoomMap">
+
+        <result property="roomId" column="roomid" />
+        <result property="createDate" column="createddate" />
+        <result property="lastMessageTime" column="lastmessagetime" />
+
+    </resultMap>
+
+    <insert id="createChatRoom">
+        INSERT INTO chatroom(roomid, createdate)
+        VALUES (#{roomId}, #{createDate})
+    </insert>
+
+</mapper>
+
