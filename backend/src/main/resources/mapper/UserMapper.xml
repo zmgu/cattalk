@@ -24,6 +24,12 @@
         WHERE username = #{username}
     </select>
 
+    <select id="findOneByUsername" resultType="Long">
+        SELECT userid
+        FROM user
+        WHERE username = #{username}
+    </select>
+
     <insert id="save">
         INSERT INTO users(username, password, name, email, role)
         VALUES (#{username}, #{password}, #{name}, #{email}, #{role})
