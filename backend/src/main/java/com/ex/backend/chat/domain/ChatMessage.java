@@ -10,7 +10,7 @@ import java.util.Date;
 public class ChatMessage {
 
     private Long messageId;
-    private String userName;
+    private Long userId;
     private String content;
     private String roomId;
     private Date sendTime;
