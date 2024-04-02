@@ -40,6 +40,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         PrincipalDetails user = (PrincipalDetails) authentication.getPrincipal();
 
         Long userId = user.getUserId();
+        logger.info("userId : " + userId);
         String name = user.getName();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

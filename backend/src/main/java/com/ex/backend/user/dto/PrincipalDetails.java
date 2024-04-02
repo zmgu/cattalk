@@ -20,7 +20,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     }
 
     public Long getUserId() {
-        return user.getId();
+        return user.getUserId();
     }
 
     public String getNickname() { return user.getNickname(); }

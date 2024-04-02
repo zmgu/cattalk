@@ -12,7 +12,7 @@ import java.util.Date;
 @Builder
 public class User {
 
-    private final Long id;
+    private final Long userId;
     private String username;
     private String nickname;
     private String password;

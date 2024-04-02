@@ -6,21 +6,20 @@
 <mapper namespace="com.ex.backend.user.mapper.UserMapper">
     <!-- Users 매핑-->
     <resultMap type="User" id="userMap">
-        <id property="id" column="id" />
+        <id property="userId" column="userid" />
 
-        <result property="id" column="id" />
         <result property="username" column="username" />
         <result property="nickname" column="nickname" />
         <result property="password" column="password" />
+        <result property="role" column="role" />
         <result property="name" column="name" />
         <result property="email" column="email" />
         <result property="enabled" column="enabled" />
         <result property="regDate" column="reg_date" />
-        <result property="updDate" column="upd_date" />
     </resultMap>
 
     <select id="findByUsername" resultType="user">
-        SELECT username, nickname, name, email, role
+        SELECT *
         FROM users
         WHERE username = #{username}
     </select>

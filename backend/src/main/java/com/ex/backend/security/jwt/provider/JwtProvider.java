@@ -32,7 +32,7 @@ public class JwtProvider {
                 .signWith(secretKey)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredTime))
-                .claim("userid", userId)
+                .claim("userId", userId)
                 .claim("nickname", nickname)
                 .claim("role", role)
                 .compact();

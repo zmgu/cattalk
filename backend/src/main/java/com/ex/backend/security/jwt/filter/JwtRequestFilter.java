@@ -62,7 +62,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String role = jwtProvider.getRole(accessToken);
 
         User user = User.builder()
-                .id(userId)
+                .userId(userId)
                 .nickname(nickname)
                 .role(role)
                 .build();
