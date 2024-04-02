@@ -20,6 +20,7 @@ const LoginForm = () => {
                     onChange={(event) => (
                         setEmail(event.target.value)
                     )} 
+                    autoComplete="email"
                     placeholder='이메일'/>
                 </div>
 
@@ -32,6 +33,7 @@ const LoginForm = () => {
                     onChange={(event) => (
                         sePassword(event.target.value)
                     )} 
+                    autoComplete="current-password"
                     placeholder='비밀번호'/>
                 </div>
                 <button type="submit" className="submitBtn">
