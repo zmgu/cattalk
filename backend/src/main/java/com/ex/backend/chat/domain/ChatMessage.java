@@ -9,7 +9,7 @@ import java.util.Date;
 @Builder
 public class ChatMessage {
 
-    private String messageId;
+    private Long messageId;
     private String userName;
     private String content;
     private String roomId;
