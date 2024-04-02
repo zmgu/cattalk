@@ -4,20 +4,23 @@ import com.ex.backend.chat.domain.ChatRoom;
 import com.ex.backend.chat.domain.ChatRoomName;
 import com.ex.backend.chat.mapper.ChatRoomMapper;
 import com.ex.backend.chat.mapper.ChatRoomNameMapper;
+import com.ex.backend.user.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
 
+    private final Logger logger = Logger.getLogger(ChatRoomService.class.getName());
     private final ChatRoomMapper chatRoomMapper;
     private final ChatRoomNameMapper chatRoomNameMapper;
 
-    public ChatRoom createRoom(Long userId,String partnerName) throws Exception {
+    public ChatRoom createRoom(Long userId,String partnerName) {
 
         String roomId = UUID.randomUUID().toString();
 
@@ -26,7 +29,11 @@ public class ChatRoomService {
                 .createdDate(new Date(System.currentTimeMillis()))
                 .build();
 
-        chatRoomMapper.createChatRoom(room);
+        try {
+            chatRoomMapper.createChatRoom(room);
+        } catch (Exception e) {
+            logger.severe("createChatRoom 생성 에러 : " + e);
+        }
 
         ChatRoomName chatRoomName = ChatRoomName.builder()
                 .roomId(roomId)
@@ -34,7 +41,11 @@ public class ChatRoomService {
                 .roomName(partnerName)
                 .build();
 
-        chatRoomNameMapper.createChatRoomName(chatRoomName);
+        try {
+            chatRoomNameMapper.createChatRoomName(chatRoomName);
+        } catch (Exception e) {
+            logger.severe("createChatRoomName 생성 에러 : " + e);
+        }
 
         return room;
     }
