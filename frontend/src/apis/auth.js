@@ -10,6 +10,9 @@ export const logout = () => publicApi.post(`/logout`, {}, { withCredentials: tru
 // 사용자 정보
 export const info = () => privateApi.get(`/users/info`)
 
+// 친구 리스트
+export const friendsList = () => privateApi.get(`/users`)
+
 // 회원 가입 
 export const join = (data) => privateApi.post(`/users`, data)
 
