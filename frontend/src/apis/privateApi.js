@@ -9,7 +9,6 @@ const privateApi = axios.create({
 privateApi.interceptors.request.use(config => {
     const accessToken = localStorage.getItem('Authorization');
     console.log(`privateApi 시작`);
-    console.log(`localStorage에서 가져온 accessToken : ${accessToken}`);
     
     if (accessToken) {
         console.log(`accessToken 헤더에 담아 요청 시도`);
