@@ -103,8 +103,6 @@ const LoginContextProvider = ({ children }) => {
             return
         }        
 
-        // const check = window.confirm(`로그아웃하시겠습니까?`)
-
         if (window.confirm("로그아웃하시겠습니까?")) {
             console.log('로그아웃 진행 중');
             // 로그아웃 세팅
