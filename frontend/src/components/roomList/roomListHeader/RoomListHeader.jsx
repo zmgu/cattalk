@@ -1,4 +1,4 @@
-import './RoomListHeader.css';
+import room from './RoomListHeader.module.css'
 import { Link } from 'react-router-dom'
 import { useContext, useState, useEffect, useRef } from 'react';
 import { LoginContext } from '../../../contexts/LoginContextProvider';
@@ -30,26 +30,26 @@ const RoomListHeader = () => {
     }
 
     return (
-        <div className='header-container' ref={menuRef}>
-            <div className='header-title'>
-                <div className='roomlist-logo'></div>
+        <div className={room['container']} ref={menuRef}>
+            <div className={room['title']}>
+                <div className={room['logo']}></div>
             </div>
-            <div className='header-btn-box'>
-                <button className='roomlist-header-btn'>
-                    <FontAwesomeIcon icon={faMagnifyingGlass} className='roomlist-header-icon' />
+            <div className={room['btn-box']}>
+                <button className={room['btn']}>
+                    <FontAwesomeIcon icon={faMagnifyingGlass} className={room['icon']} />
                 </button>
-                <button className='roomlist-header-btn'>
-                    <FontAwesomeIcon icon={faCommentDots} className='roomlist-header-icon' />
+                <button className={room['btn']}>
+                    <FontAwesomeIcon icon={faCommentDots} className={room['icon']} />
                 </button>
-                <div className={`roomlist-options ${showList ? 'show' : ''}`}>
+                <div className={`${room['options']} ${showList ? room['show'] : ''}`}>
                     <button>채팅방 만들기</button>
                 </div>
-
-                <button id="menuToggle" className='roomlist-header-btn' onClick={toggleList}>
-                    <FontAwesomeIcon icon={faGear} className='roomlist-header-icon' />
+    
+                <button id="menuToggle" className={room['btn']} onClick={toggleList}>
+                    <FontAwesomeIcon icon={faGear} className={room['icon']} />
                 </button>
                 
-                <div className={`roomlist-options ${showList ? 'show' : ''}`}>
+                <div className={`${room['options']} ${showList ? room['show'] : ''}`}>
                     <Link to='/chat'>임시 채팅방</Link>
                     <button>최신 메시지 순</button>
                     <button>안 읽은 메시지 순</button>
@@ -59,6 +59,7 @@ const RoomListHeader = () => {
             </div>
         </div>
     );
+    
 }
 
 export default RoomListHeader;
