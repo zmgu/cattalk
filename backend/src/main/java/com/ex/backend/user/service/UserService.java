@@ -1,5 +1,6 @@
 package com.ex.backend.user.service;
 
+import com.ex.backend.chat.service.ChatRoomService;
 import com.ex.backend.user.dto.User;
 import com.ex.backend.user.mapper.UserMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 
 @Slf4j
@@ -21,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final Logger logger = Logger.getLogger(UserService.class.getName());
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
@@ -67,8 +70,13 @@ public class UserService {
         return result;
     }
 
-    public List<User> selectUserList() throws Exception {
-
-        return userMapper.selectUserList();
+    public List<User> selectUserList() {
+        try {
+            List<User> userList = userMapper.selectUserList();
+            return userList;
+        } catch (Exception e) {
+            logger.severe("selectUserList 에러 : " + e.getStackTrace());
+        }
+        return null;
     }
 }
