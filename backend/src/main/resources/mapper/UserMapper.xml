@@ -4,26 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ex.backend.user.mapper.UserMapper">
-    <typeAlias type alias>
-    </typeAlias>
-    <!-- Users 매핑-->
-    <resultMap type="User" id="userMap">
-        <id property="userId" column="userid" />
-
-        <result property="username" column="username" />
-        <result property="nickname" column="nickname" />
-        <result property="password" column="password" />
-        <result property="role" column="role" />
-        <result property="name" column="name" />
-        <result property="email" column="email" />
-        <result property="enabled" column="enabled" />
-        <result property="regDate" column="reg_date" />
-    </resultMap>
-
-    <resultMap id="friend" type="com.ex.backend.user.dto.User">
-        <id property="userId" column="userid"/>
-        <result property="nickname" column="nickname"/>
-    </resultMap>
 
     <select id="findByUsername" resultType="User">
         SELECT *
@@ -31,15 +11,14 @@
         WHERE username = #{username}
     </select>
 
-    <!-- 유저 리스트 조회 -->
-    <select id="selectUserList" resultMap="friend">
-        SELECT userid, nickname
+    <select id="selectUserList" resultType="User">
+        SELECT user_id, nickname
         FROM users
     </select>
 
-    <select id="findOneByUsername" resultType="Long">
-        SELECT userid
-        FROM user
+    <select id="findOneByUsername" resultType="long">
+        SELECT user_id
+        FROM users
         WHERE username = #{username}
     </select>
 
@@ -54,8 +33,8 @@
     </insert>
 
     <insert id="oauthSave">
-        INSERT INTO users(username, name, email, role)
-        VALUES (#{username}, #{name}, #{email}, #{role})
+        INSERT INTO users(username, nickname, name, email, role)
+        VALUES (#{username}, #{nickname}, #{name}, #{email}, #{role})
     </insert>
 
     <update id="update">
