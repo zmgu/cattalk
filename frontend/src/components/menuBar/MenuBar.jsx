@@ -7,7 +7,7 @@ const MenuBar = () => {
     return (
         <div className='menubar-container'>
             <div className='menu-link-box'>
-                <Link to="" className='menu-link'><FontAwesomeIcon icon={faUser} className='menubar-icon'/></Link>
+                <Link to="/friends" className='menu-link'><FontAwesomeIcon icon={faUser} className='menubar-icon'/></Link>
                 <Link to="" className='menu-link'><FontAwesomeIcon icon={faComment} className='menubar-icon'/></Link>
                 <Link to="" className='menu-link'><FontAwesomeIcon icon={faEllipsis} className='menubar-icon'/></Link>
             </div>
