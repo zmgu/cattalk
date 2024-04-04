@@ -1,7 +1,6 @@
 package com.ex.backend.user.dto;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
