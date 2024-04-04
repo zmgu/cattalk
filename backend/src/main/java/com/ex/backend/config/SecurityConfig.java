@@ -93,6 +93,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/reissue").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/oauth2").permitAll()
                         .requestMatchers("/chat").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/friends").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
