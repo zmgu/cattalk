@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Slf4j
 @Service
@@ -63,5 +65,10 @@ public class UserService {
         int result = userMapper.insert(user);
 
         return result;
+    }
+
+    public List<User> selectUserList() throws Exception {
+
+        return userMapper.selectUserList();
     }
 }

@@ -2,18 +2,24 @@ package com.ex.backend.user.controller;
 
 import com.ex.backend.user.dto.PrincipalDetails;
 import com.ex.backend.user.dto.User;
+import com.ex.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
+
+    private final UserService userService;
 
     /**
      * 사용자 정보 조회
@@ -31,5 +37,10 @@ public class UserController {
 
         // 인증 되지 않음
         return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+    }
+
+    @GetMapping
+    public List<User> selectUserList() throws Exception {
+        return userService.selectUserList();
     }
 }

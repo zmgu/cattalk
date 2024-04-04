@@ -3,10 +3,14 @@ package com.ex.backend.user.mapper;
 import com.ex.backend.user.dto.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
 
     User findByUsername(String username) throws Exception;
+
+    List<User> selectUserList() throws Exception;
 
     void save(User user) throws Exception;
 
