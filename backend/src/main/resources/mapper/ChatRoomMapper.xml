@@ -5,17 +5,14 @@
 
 <mapper namespace="com.ex.backend.chat.mapper.ChatRoomMapper">
 
-    <resultMap type="ChatRoom" id="ChatRoomMap">
-
-        <result property="roomId" column="roomid" />
-        <result property="createDate" column="createddate" />
-        <result property="lastMessageTime" column="lastmessagetime" />
-
-    </resultMap>
-
     <insert id="createChatRoom">
-        INSERT INTO chatroom(roomid, createdate)
-        VALUES (#{roomId}, #{createDate})
+        INSERT INTO chat_room(room_id)
+        VALUES (#{room_id})
+    </insert>
+
+    <insert id="insertChatRoomParticipant">
+        INSERT INTO chat_room_participant(room_id, user_id)
+        VALUES (#{room_id}, #{user_id})
     </insert>
 
 </mapper>

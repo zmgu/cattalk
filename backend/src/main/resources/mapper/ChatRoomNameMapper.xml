@@ -5,16 +5,9 @@
 
 <mapper namespace="com.ex.backend.chat.mapper.ChatRoomNameMapper">
 
-    <resultMap type="ChatRoomName" id="ChatRoomNameMap">
-        <result property="roomId" column="roomid" />
-        <result property="userId" column="userid" />
-        <result property="roomName" column="roomname" />
-
-    </resultMap>
-
     <insert id="createChatRoomName">
-        INSERT INTO chatroomname(userid, roomid, roomname)
-        VALUES (#{userId}, #{rooId}, #{roomName})
+        INSERT INTO chat_room_name(user_id, room_id, room_name)
+        VALUES (#{user_id}, #{room_id}, #{room_name})
     </insert>
 
 </mapper>
