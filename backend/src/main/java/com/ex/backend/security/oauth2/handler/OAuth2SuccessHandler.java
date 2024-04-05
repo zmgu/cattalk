@@ -41,14 +41,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         Long userId = user.getUserId();
         logger.info("userId : " + userId);
-        String name = user.getName();
+        String nickname = user.getNickname();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String refreshToken = jwtProvider.createToken(JwtConstants.REFRESH_TOKEN, userId, name, role);
+        String refreshToken = jwtProvider.createToken(JwtConstants.REFRESH_TOKEN, userId, nickname, role);
 
         logger.info("refreshToken: " + refreshToken);
 
