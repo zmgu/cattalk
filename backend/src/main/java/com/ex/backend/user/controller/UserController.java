@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,7 +37,8 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> selectUserList() throws Exception {
-        return userService.selectUserList();
+    public List<User> selectUserList(@RequestParam(name = "userId") Long userId) throws Exception {
+
+        return userService.selectUserList(userId);
     }
 }

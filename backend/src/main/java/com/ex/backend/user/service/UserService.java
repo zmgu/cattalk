@@ -70,9 +70,9 @@ public class UserService {
         return result;
     }
 
-    public List<User> selectUserList() {
+    public List<User> selectUserList(Long userId) {
         try {
-            List<User> userList = userMapper.selectUserList();
+            List<User> userList = userMapper.selectUserList(userId);
             return userList;
         } catch (Exception e) {
             logger.severe("selectUserList 에러 : " + e.getStackTrace());

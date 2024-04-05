@@ -10,7 +10,7 @@ public interface UserMapper {
 
     User findByUsername(String username) throws Exception;
 
-    List<User> selectUserList() throws Exception;
+    List<User> selectUserList(Long userId) throws Exception;
 
     void save(User user) throws Exception;
 
