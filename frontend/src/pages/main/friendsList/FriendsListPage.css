@@ -1,5 +1,8 @@
 .line {
     margin: 0;
-    background-color: rgb(255, 255, 255);
-    border-color: white;
+    border: 0; /* 기존의 border를 제거 */
+    height: 1px; /* 선의 두께 */
+    margin-left: 3%;
+    width: 94%;
+    background-color: rgb(226, 226, 226); /* 원하는 색상으로 변경 */
 }

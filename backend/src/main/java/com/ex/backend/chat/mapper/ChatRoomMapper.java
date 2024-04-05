@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ChatRoomMapper {
 
-    void createChatRoom(ChatRoom chatRoom) throws Exception;
+    void createChatRoom(String roomId) throws Exception;
 
+    void insertChatRoomParticipant(String roomId, Long userId) throws Exception;
 }

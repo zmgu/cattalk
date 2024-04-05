@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { LoginContext } from '../../contexts/LoginContextProvider';
 import { friendsList } from '../../apis/auth'
-import profile from './myProfile/MyProfile.module.css';
+import Friend from './FriendsList.module.css'
 import profile_null from '../../assets/profile/profile_null.jpg';
+import { createChatRoom } from '../../apis/chat';
 
 const FriendsList = () => {
     const [friends, setFriends] = useState([]);
+    const { userInfo } = useContext(LoginContext);
+
 
     useEffect(() => {
         const fetchFriendsList = async () => {
             try {
-                const response = await friendsList();
+                const response = await friendsList(userInfo.userId);
                 setFriends(response.data);
             } catch (error) {
                 console.error("친구 목록을 불러오는 데 실패했습니다.", error);
@@ -20,13 +24,15 @@ const FriendsList = () => {
     }, []);
 
     return (
-        <div className={profile['list-container']}>
+        <div className={Friend['list-container']}>
             {friends.map(friend => (
-                <div key={friend.id} className={profile['container']}>
-                    <div className={profile['image-box']}>
-                        <img src={profile_null} alt='' className={profile['image']}/>
+                <div key={friend.userId} 
+                    className={Friend['container']} 
+                    onDoubleClick={() => createChatRoom(userInfo.userId, friend.userId, friend.nickname)}>
+                    <div className={Friend['image-box']}>
+                        <img src={profile_null} alt='' className={Friend['image']}/>
                     </div>
-                    <div className={profile['name']}>{friend.nickname}</div>
+                    <div className={Friend['name']}>{friend.nickname}</div>
                 </div>
             ))}
         </div>
