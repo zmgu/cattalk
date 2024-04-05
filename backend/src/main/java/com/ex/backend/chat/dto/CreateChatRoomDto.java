@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class CreateChatRoomDto {
 
-    private Long userId;
-    private String partnerName;
+    private Long myUserId;
+    private Long friendUserId;
+    private String friendNickname;
 }
