@@ -21,9 +21,9 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/room")
-    public ResponseEntity<ChatRoom> createRoom(@RequestBody CreateChatRoomDto request) {
+    public ResponseEntity<String> createRoom(@RequestBody CreateChatRoomDto request) {
         try {
-            ChatRoom createdRoom = chatRoomService.createRoom(request.getUserId(), request.getPartnerName());
+            String createdRoom = chatRoomService.createRoom(request.getMyUserId(), request.getFriendUserId(), request.getFriendNickname());
 
             return ResponseEntity.ok(createdRoom);
 
