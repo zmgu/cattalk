@@ -20,7 +20,7 @@ public class ChatRoomService {
     private final ChatRoomMapper chatRoomMapper;
     private final ChatRoomNameMapper chatRoomNameMapper;
 
-    public String createRoom(Long myUserId,Long friendUserId, String friendNickname) {
+    public String createChatRoom(Long myUserId, String myNickname, Long friendUserId, String friendNickname) {
 
         String roomId = UUID.randomUUID().toString();
 
@@ -30,26 +30,37 @@ public class ChatRoomService {
             logger.log(Level.SEVERE, "createChatRoom 쿼리 에러", e);
         }
 
-        ChatRoomName chatRoomName = ChatRoomName.builder()
+        ChatRoomName myChatRoomName = ChatRoomName.builder()
                 .roomId(roomId)
                 .userId(myUserId)
                 .roomName(friendNickname)
                 .build();
 
+        ChatRoomName friendChatRoomName = ChatRoomName.builder()
+                .roomId(roomId)
+                .userId(friendUserId)
+                .roomName(myNickname)
+                .build();
+
         try {
-            chatRoomNameMapper.createChatRoomName(chatRoomName);
+            chatRoomNameMapper.createChatRoomName(myChatRoomName);
+            chatRoomNameMapper.createChatRoomName(friendChatRoomName);
+
         } catch (Exception e) {
-            logger.severe("createChatRoomName 쿼리 에러 : " + e);
+            logger.log(Level.SEVERE, "createChatRoomName 쿼리 에러", e);
         }
 
         try {
             chatRoomMapper.insertChatRoomParticipant(roomId, myUserId);
             chatRoomMapper.insertChatRoomParticipant(roomId, friendUserId);
         } catch (Exception e) {
-            logger.severe("insertChatRoomParticipant 쿼리 에러 : " + e);
+            logger.log(Level.SEVERE, "insertChatRoomParticipant 쿼리 에러", e);
         }
 
         return roomId;
     }
 
+    public String findChatRoom() {
+        return null;
+    }
 }
