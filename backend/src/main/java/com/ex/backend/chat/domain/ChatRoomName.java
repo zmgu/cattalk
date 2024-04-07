@@ -1,16 +1,16 @@
 package com.ex.backend.chat.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ChatRoomName {
 
-    private final String roomId;
-    private final Long userId;
+    private String roomId;
+    private Long userId;
     private String roomName;
 
 }
