@@ -8,6 +8,7 @@ import lombok.Getter;
 public class CreateChatRoomDto {
 
     private Long myUserId;
+    private String myNickname;
     private Long friendUserId;
     private String friendNickname;
 }
