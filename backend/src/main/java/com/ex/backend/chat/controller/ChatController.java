@@ -1,14 +1,11 @@
 package com.ex.backend.chat.controller;
 
-import com.ex.backend.chat.domain.ChatRoom;
 import com.ex.backend.chat.dto.CreateChatRoomDto;
+import com.ex.backend.chat.dto.FindChatRoomDto;
 import com.ex.backend.chat.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
@@ -21,9 +18,15 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/room")
-    public ResponseEntity<String> createRoom(@RequestBody CreateChatRoomDto request) {
+    public ResponseEntity<String> createChatRoom(@RequestBody CreateChatRoomDto request) {
         try {
-            String createdRoom = chatRoomService.createRoom(request.getMyUserId(), request.getFriendUserId(), request.getFriendNickname());
+            String createdRoom = chatRoomService
+                    .createChatRoom(
+                            request.getMyUserId()
+                            ,request.getMyNickname()
+                            ,request.getFriendUserId()
+                            ,request.getFriendNickname()
+                    );
 
             return ResponseEntity.ok(createdRoom);
 
@@ -31,5 +34,13 @@ public class ChatController {
             logger.severe("채팅방 생성 에러 : " + e);
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/room")
+    public ResponseEntity<String> findChatRoom(@RequestBody FindChatRoomDto findChatRoomDto) {
+
+
+
+        return null;
     }
 }
