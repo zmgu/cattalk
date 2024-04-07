@@ -12,8 +12,18 @@
 
     <insert id="insertChatRoomParticipant">
         INSERT INTO chat_room_participant(room_id, user_id)
-        VALUES (#{room_id}, #{user_id})
+        VALUES (#{roomId}, #{userId})
     </insert>
+
+    <select id="findChatRoom" resultType="String">
+        SELECT ROOM_ID
+        FROM chat_room_participant
+        WHERE USER_ID IN (
+                          #{myUserId}, #{friendUserId}
+            )
+        GROUP BY ROOM_ID
+        HAVING COUNT(DISTINCT USER_ID) = 2
+    </select>
 
 </mapper>
 
