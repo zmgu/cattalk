@@ -18,15 +18,9 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/room")
-    public ResponseEntity<String> createChatRoom(@RequestBody CreateChatRoomDto request) {
+    public ResponseEntity<String> createChatRoom(@RequestBody CreateChatRoomDto createChatRoomDto) {
         try {
-            String createdRoom = chatRoomService
-                    .createChatRoom(
-                            request.getMyUserId()
-                            ,request.getMyNickname()
-                            ,request.getFriendUserId()
-                            ,request.getFriendNickname()
-                    );
+            String createdRoom = chatRoomService.createChatRoom(createChatRoomDto);
 
             return ResponseEntity.ok(createdRoom);
 
@@ -39,8 +33,8 @@ public class ChatController {
     @GetMapping("/room")
     public ResponseEntity<String> findChatRoom(@RequestBody FindChatRoomDto findChatRoomDto) {
 
+        String roomId = chatRoomService.findChatRoom(findChatRoomDto);
 
-
-        return null;
+        return ResponseEntity.ok(roomId);
     }
 }

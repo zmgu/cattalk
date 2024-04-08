@@ -1,5 +1,6 @@
 package com.ex.backend.chat.mapper;
 
+import com.ex.backend.chat.dto.FindChatRoomDto;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -9,5 +10,5 @@ public interface ChatRoomMapper {
 
     void insertChatRoomParticipant(String roomId, Long userId) throws Exception;
 
-    String findChatRoom(Long myUserId, Long friendUserId) throws Exception;
+    String findChatRoom(FindChatRoomDto findChatRoomDto) throws Exception;
 }
