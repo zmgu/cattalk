@@ -31,9 +31,9 @@ public class ChatController {
     }
 
     @GetMapping("/room")
-    public ResponseEntity<String> findChatRoom(@RequestBody FindChatRoomDto findChatRoomDto) {
+    public ResponseEntity<String> findChatRoom(@RequestParam Long myUserId, @RequestParam Long friendUserId) {
 
-        String roomId = chatRoomService.findChatRoom(findChatRoomDto);
+        String roomId = chatRoomService.findChatRoom(myUserId, friendUserId);
 
         return ResponseEntity.ok(roomId);
     }

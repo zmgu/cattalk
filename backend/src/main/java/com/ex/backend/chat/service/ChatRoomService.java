@@ -61,12 +61,12 @@ public class ChatRoomService {
         return roomId;
     }
 
-    public String findChatRoom(FindChatRoomDto findChatRoomDto) {
+    public String findChatRoom(Long myUserId, Long friendUserId) {
 
         String roomId = null;
 
         try {
-            roomId = chatRoomMapper.findChatRoom(findChatRoomDto);
+            roomId = chatRoomMapper.findChatRoom(myUserId, friendUserId);
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "findChatRoom 쿼리 에러", e);
