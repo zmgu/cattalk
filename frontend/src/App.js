@@ -13,7 +13,7 @@ function App() {
         <Routes>
             <Route path='*' element={ <Main /> } />
             <Route path="/login" element={ <Login /> }/>
-            <Route path='/chat' element={ <Chat />}/>
+            <Route path='/chat/:roomId' element={ <Chat /> } />
             <Route path='/oauth2' element={<OAuth2RedirectHandler />} />  
         </Routes>
       </LoginContextProvider>
