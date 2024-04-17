@@ -16,13 +16,11 @@
     </insert>
 
     <select id="findChatRoom" resultType="String">
-        SELECT ROOM_ID
-        FROM chat_room_participant
-        WHERE USER_ID IN (
-                          #{myUserId}, #{friendUserId}
-            )
-        GROUP BY ROOM_ID
-        HAVING COUNT(DISTINCT USER_ID) = 2
+        SELECT a.ROOM_ID
+        FROM chat_room_participant a
+                 JOIN chat_room_participant b ON a.ROOM_ID = b.ROOM_ID
+        WHERE a.USER_ID = #{myUserId}
+          AND b.USER_ID = #{friendUserId}
     </select>
 
 </mapper>
