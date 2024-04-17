@@ -7,4 +7,9 @@ export const createChatRoom = (myUserId, myNickname, friendUserId, friendNicknam
 
 // 채팅방 찾기
 export const findChatRoom = (myUserId, friendUserId) => 
-    privateApi.get(`/chat/room`, { myUserId, friendUserId });
+    privateApi.get(`/chat/room`, {         
+        params: {
+        myUserId: myUserId,
+        friendUserId: friendUserId
+    } 
+});
