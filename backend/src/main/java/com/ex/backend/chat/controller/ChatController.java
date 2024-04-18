@@ -1,7 +1,6 @@
 package com.ex.backend.chat.controller;
 
 import com.ex.backend.chat.dto.CreateChatRoomDto;
-import com.ex.backend.chat.dto.FindChatRoomDto;
 import com.ex.backend.chat.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,22 +18,15 @@ public class ChatController {
 
     @PostMapping("/room")
     public ResponseEntity<String> createChatRoom(@RequestBody CreateChatRoomDto createChatRoomDto) {
-        try {
-            String createdRoom = chatRoomService.createChatRoom(createChatRoomDto);
 
-            return ResponseEntity.ok(createdRoom);
-
-        } catch (Exception e) {
-            logger.severe("채팅방 생성 에러 : " + e);
-            return ResponseEntity.badRequest().build();
-        }
+        String createdRoom = chatRoomService.createChatRoom(createChatRoomDto);
+        return ResponseEntity.ok(createdRoom);
     }
 
     @GetMapping("/room")
     public ResponseEntity<String> findChatRoom(@RequestParam Long myUserId, @RequestParam Long friendUserId) {
 
         String roomId = chatRoomService.findChatRoom(myUserId, friendUserId);
-
         return ResponseEntity.ok(roomId);
     }
 }
