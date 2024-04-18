@@ -27,18 +27,15 @@ const FriendsList = () => {
     const handleDoubleClick = async (friendUserId, friendNickname) => {
         try {
             let response = await findChatRoom(userInfo.userId, friendUserId);
-            console.log("Response from findChatRoom1:", response.data);
 
-            if (response.data.roomId) { // 채팅방이 있다면, 해당 채팅방으로 이동
-                
-                navigate(`/chat/${response.data.roomId}`);
+            if (response.data) { // 채팅방이 있다면, 해당 채팅방으로 이동
+                navigate(`/chat/${response.data}`);
                 
             } else { // 채팅방이 없다면, 새 채팅방을 생성하고 이동
-
                 await createChatRoom(userInfo.userId, userInfo.nickname, friendUserId, friendNickname);
                 response = await findChatRoom(userInfo.userId, friendUserId);
-                console.log("Response from findChatRoom2:", response.data);
-                navigate(`/chat/${response.data.roomId}`);
+
+                navigate(`/chat/${response.data}`);
             }
         } catch (error) {
             console.error("채팅방 처리 중 에러 발생", error);
