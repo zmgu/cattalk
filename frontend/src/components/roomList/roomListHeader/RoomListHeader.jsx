@@ -50,7 +50,6 @@ const RoomListHeader = () => {
                 </button>
                 
                 <div className={`${room['options']} ${showList ? room['show'] : ''}`}>
-                    <Link to='/chat'>임시 채팅방</Link>
                     <button>최신 메시지 순</button>
                     <button>안 읽은 메시지 순</button>
                     <button>편집</button>
