@@ -23,5 +23,11 @@
           AND b.USER_ID = #{friendUserId}
     </select>
 
+    <select id="findChatRoomList" resultType="findChatRoomList">
+        SELECT *
+        FROM chat_room_name
+        WHERE USER_ID =#{userId}
+    </select>
+
 </mapper>
 
