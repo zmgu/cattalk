@@ -1,8 +1,8 @@
 package com.ex.backend.chat.mapper;
 
 import com.ex.backend.chat.domain.ChatRoomName;
-import com.ex.backend.chat.dto.FindChatRoomDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -11,9 +11,9 @@ public interface ChatRoomMapper {
 
     void createChatRoom(String roomId) throws Exception;
 
-    void insertChatRoomParticipant(String roomId, Long userId) throws Exception;
+    void insertChatRoomParticipant(@Param("roomId") String roomId, @Param("userId") Long userId) throws Exception;
 
-    String findChatRoom(Long myUserId, Long friendUserId) throws Exception;
+    String findChatRoom(@Param("myUserId") Long myUserId, @Param("friendUserId") Long friendUserId) throws Exception;
 
-    List<ChatRoomName> findChatRoomList(ChatRoomName chatRoomName) throws Exception;
+    List<ChatRoomName> findChatRoomList(Long myUserId) throws Exception;
 }
