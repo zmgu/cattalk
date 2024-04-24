@@ -10,4 +10,11 @@
         VALUES (#{roomId}, #{userId}, #{roomName})
     </insert>
 
+    <select id="findChatRoomName" resultType="String">
+        SELECT room_name
+        FROM chat_room_name
+        WHERE user_id = #{userId}
+        AND room_id = #{roomId}
+    </select>
+
 </mapper>
