@@ -51,7 +51,6 @@ const FriendsListHeader = () => {
                 </button>
                 
                 <div className={`${friends['options']} ${showList ? friends['show'] : ''}`}>
-                    <Link to='/chat'>임시 채팅방</Link>
                     <button>최신 메시지 순</button>
                     <button>안 읽은 메시지 순</button>
                     <button>편집</button>
