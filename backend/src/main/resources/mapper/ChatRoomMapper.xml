@@ -23,7 +23,7 @@
           AND b.USER_ID = #{friendUserId}
     </select>
 
-    <select id="findChatRoomList" resultType="findChatRoomList">
+    <select id="findChatRoomList" resultType="ChatRoomName">
         SELECT *
         FROM chat_room_name
         WHERE USER_ID =#{userId}
