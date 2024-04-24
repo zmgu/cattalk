@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { LoginContext } from '../../contexts/LoginContextProvider';
 import { friendsList } from '../../apis/auth';
-import { findChatRoom, createChatRoom } from '../../apis/chat';
+import { findChatRoom, createChatRoom, findChatRoomName } from '../../apis/chat';
 import Friend from './FriendsList.module.css';
 import profile_null from '../../assets/profile/profile_null.jpg';
 import { useNavigate } from 'react-router-dom';
@@ -26,17 +26,24 @@ const FriendsList = () => {
 
     const handleDoubleClick = async (friendUserId, friendNickname) => {
         try {
-            let response = await findChatRoom(userInfo.userId, friendUserId);
+            let roomIdResponse = await findChatRoom(userInfo.userId, friendUserId);
 
-            if (response.data) { // 채팅방이 있다면, 해당 채팅방으로 이동
-                navigate(`/chat/${response.data}`);
-                
-            } else { // 채팅방이 없다면, 새 채팅방을 생성하고 이동
+            if(!roomIdResponse.data) { // 채팅방이 없다면, 새 채팅방을 생성 후 이동
                 await createChatRoom(userInfo.userId, userInfo.nickname, friendUserId, friendNickname);
-                response = await findChatRoom(userInfo.userId, friendUserId);
-
-                navigate(`/chat/${response.data}`);
+                roomIdResponse = await findChatRoom(userInfo.userId, friendUserId);
             }
+            const roomId = roomIdResponse.data;
+            
+            const roomNameResponse = await findChatRoomName(roomId, userInfo.userId);
+            const roomName = roomNameResponse.data;
+
+            navigate(`/chat/${roomId}`, { 
+                state: { 
+                    roomId: roomId,
+                    roomName: roomName
+                } 
+            });
+
         } catch (error) {
             console.error("채팅방 처리 중 에러 발생", error);
         }
