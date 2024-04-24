@@ -9,6 +9,7 @@ import com.ex.backend.chat.mapper.ChatRoomNameMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,5 +74,29 @@ public class ChatRoomService {
         }
 
         return roomId;
+    }
+
+    public List<ChatRoomName> findChatRoomList(Long userId) {
+        List<ChatRoomName> chatRoomList = null;
+
+        try {
+            chatRoomList = chatRoomMapper.findChatRoomList(userId);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "findChatRoomList 쿼리 에러", e);
+        }
+
+        return chatRoomList;
+    }
+
+    public String findChatRoomName(String roomId, Long userId) {
+        String chatRoomName = null;
+
+        try {
+            chatRoomName = chatRoomNameMapper.findChatRoomName(roomId, userId);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "findChatRoomName 쿼리 에러", e);
+        }
+
+        return chatRoomName;
     }
 }
