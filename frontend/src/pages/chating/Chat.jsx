@@ -1,10 +1,14 @@
 import './Chat.css'
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom'
+import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperclip, faPaperPlane, faArrowLeft, faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
 
 const Chat = () => {
+    
+    const location = useLocation();
+    const [roomDetails, setRoomDetails] = useState(location.state || {});
 
     const [message, setMessage] = useState('');
     const chatContainerRef = useRef(null);
@@ -62,7 +66,7 @@ const Chat = () => {
                     <Link to='/'><FontAwesomeIcon icon= {faArrowLeft} className='chat-header-icon' /></Link>
                 </div>
                 <div className='chat-header-center'>
-                    <div className='temp-img'></div>
+                    <div className='temp-img'>{roomDetails.roomName}</div>
                 </div>
                 <div className='chat-header-right'>
                     <FontAwesomeIcon icon= {faMagnifyingGlass} className='chat-header-icon' />
