@@ -66,7 +66,7 @@ const Chat = () => {
                     <Link to='/'><FontAwesomeIcon icon= {faArrowLeft} className='chat-header-icon' /></Link>
                 </div>
                 <div className='chat-header-center'>
-                    <div className='temp-img'>{roomDetails.roomName}</div>
+                    <div className=''>{roomDetails.roomName}</div>
                 </div>
                 <div className='chat-header-right'>
                     <FontAwesomeIcon icon= {faMagnifyingGlass} className='chat-header-icon' />
