@@ -1,6 +1,6 @@
 package com.ex.backend.config;
 
-import com.ex.backend.redis.RefreshTokenService;
+import com.ex.backend.redis.RefreshTokenRedis;
 import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.jwt.cookie.CookieUtil;
 import com.ex.backend.security.jwt.filter.CustomLogoutFilter;
@@ -37,7 +37,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtProvider jwtProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRedis refreshTokenRedis;
     private final CookieUtil cookieUtil;
 
     @Bean
@@ -73,7 +73,7 @@ public class SecurityConfig {
 //                        , UsernamePasswordAuthenticationFilter.class)
 
                 .addFilterBefore(new JwtRequestFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new CustomLogoutFilter(jwtProvider, refreshTokenService, cookieUtil), LogoutFilter.class)
+                .addFilterBefore(new CustomLogoutFilter(jwtProvider, refreshTokenRedis, cookieUtil), LogoutFilter.class)
         ;
 
         //oauth2

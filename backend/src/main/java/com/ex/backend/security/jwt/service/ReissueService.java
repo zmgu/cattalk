@@ -1,6 +1,6 @@
 package com.ex.backend.security.jwt.service;
 
-import com.ex.backend.redis.RefreshTokenService;
+import com.ex.backend.redis.RefreshTokenRedis;
 import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.jwt.cookie.CookieUtil;
 import com.ex.backend.security.jwt.dto.RefreshToken;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class ReissueService {
 
     private final JwtProvider jwtProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRedis refreshTokenRedis;
     private final CookieUtil cookieUtil;
     private final Logger logger = Logger.getLogger(ReissueService.class.getName());
 
@@ -41,7 +41,7 @@ public class ReissueService {
         }
 
         //DB에 저장되어 있는지 확인
-        Boolean isExist = refreshTokenService.existRefreshToken(refreshToken);
+        Boolean isExist = refreshTokenRedis.existRefreshToken(refreshToken);
         if (!isExist) {
             logger.info(" 저장되어 있는 refreshToken이 아님 ");
 
@@ -57,8 +57,8 @@ public class ReissueService {
         String newRefreshToken = jwtProvider.createToken(JwtConstants.REFRESH_TOKEN, userId, nickname, role);
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
-        refreshTokenService.deleteRefreshToken(refreshToken);
-        refreshTokenService.createRefreshToken(new RefreshToken(newRefreshToken, String.valueOf(userId)));
+        refreshTokenRedis.deleteRefreshToken(refreshToken);
+        refreshTokenRedis.createRefreshToken(new RefreshToken(newRefreshToken, String.valueOf(userId)));
 
         //response
         response.setHeader(JwtConstants.AUTHORIZATION, accessToken);
