@@ -11,10 +11,10 @@ function App() {
     <BrowserRouter>
       <LoginContextProvider>
         <Routes>
+            <Route path='/oauth2' element={<OAuth2RedirectHandler />} />  
             <Route path='*' element={ <Main /> } />
             <Route path="/login" element={ <Login /> }/>
             <Route path='/chat/:roomId' element={ <Chat /> } />
-            <Route path='/oauth2' element={<OAuth2RedirectHandler />} />  
         </Routes>
       </LoginContextProvider>
     </BrowserRouter>
