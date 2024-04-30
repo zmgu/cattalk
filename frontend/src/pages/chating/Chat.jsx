@@ -3,6 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
+
 import { faPaperclip, faPaperPlane, faArrowLeft, faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
 
 const Chat = () => {
@@ -50,6 +53,8 @@ const Chat = () => {
         }
     };
     
+    const stompClient = useRef(null);
+
     useEffect(() => {
         adjustChatMessageHeight();
         // 창 크기 조정에 대응하기 위한 이벤트 리스너 추가
@@ -57,8 +62,48 @@ const Chat = () => {
         return () => {
             window.removeEventListener('resize', adjustChatMessageHeight);
         };
-    }, []); // 의존성 배열에 관련 상태를 추가하여 높이 조절 로직이 반응하도록 설정
+
+        const connectWebSocket = () => {
+            const serverUrl = 'http://localhost:8080/chat';
+            const socket = new SockJS(serverUrl);
+            stompClient.current = Stomp.over(socket);
+            stompClient.current.connect({}, onConnected, onError);
+        };
+
+        const onConnected = () => {
+            stompClient.current.subscribe(`/sub/chat/room/${roomDetails.roomId}`, onMessageReceived);
+        };
+
+        const onMessageReceived = (msg) => {
+            const messageData = JSON.parse(msg.body);
+            setMessages(prevMessages => [...prevMessages, messageData]);
+        };
+
+        const onError = (error) => {
+            console.error('WebSocket Connection Error', error);
+        };
+
+        connectWebSocket();
+        return () => {
+            if (stompClient.current) {
+                stompClient.current.disconnect();
+            }
+        };
+
+    }, []);
     
+    const sendMessage = (content) => {
+        if (stompClient.current && stompClient.current.connected) {
+            const chatMessage = {
+                roomId: roomDetails.roomId,
+                content: content,
+                senderUserId: '123',
+                type: 'CHAT'
+            };
+            stompClient.current.send(`/pub/chat/send`, {}, JSON.stringify(chatMessage));
+        }
+    };
+
     return (
         <div className='chat-container'  ref={chatContainerRef}>
             <div className='chat-header'>
