@@ -1,6 +1,6 @@
 package com.ex.backend.security.jwt.filter;
 
-import com.ex.backend.redis.RefreshTokenService;
+import com.ex.backend.redis.RefreshTokenRedis;
 import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.jwt.cookie.CookieUtil;
 import com.ex.backend.security.jwt.provider.JwtProvider;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JwtProvider jwtProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRedis refreshTokenRedis;
     private final CookieUtil cookieUtil;
     private final Logger logger = Logger.getLogger(CustomLogoutFilter.class.getName());
 
@@ -68,7 +68,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         // DB에 저장되어 있는지 확인
-        Boolean isExist = refreshTokenService.existRefreshToken(refreshToken);
+        Boolean isExist = refreshTokenRedis.existRefreshToken(refreshToken);
         if (!isExist) {
             logger.info("refreshToken이 DB에 존재하지 않음 ");
             logger.info("로그아웃 진행");
@@ -79,7 +79,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         //Redis에서 리프래시 토큰 제거
-        refreshTokenService.deleteRefreshToken(refreshToken);
+        refreshTokenRedis.deleteRefreshToken(refreshToken);
 
         // 쿠키에서 리프래시 토큰 제거
         logoutSetting(response);
