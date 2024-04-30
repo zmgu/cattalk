@@ -9,10 +9,15 @@ import java.util.Date;
 @Builder
 public class ChatMessage {
 
-    private Long messageId;
-    private Long userId;
-    private String content;
-    private String roomId;
-    private Date sendTime;
+    private final MessageType type;
+    private final Long senderUserId;
+    private final String content;
+    private final String roomId;
+    private final Date sendTime;
 
+    public enum MessageType {
+        CHAT,
+        JOIN,
+        LEAVE
+    }
 }
