@@ -40,6 +40,10 @@ public class SecurityConfig {
     private final RefreshTokenRedis refreshTokenRedis;
     private final CookieUtil cookieUtil;
 
+    public static final String[] PUBLIC_URLS = { "/", "/ws/**", "/login", "/oauth2" };
+    public static final String[] PRIVATE_URLS = { "/auth/reissue", "/chat", "/chat/**", "/oauth2", "/users/**" };
+    public static final String[] ADMIN_URLS = { "/admin/**" };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -88,15 +92,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests( authorizeRequests ->
                 authorizeRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/auth/reissue").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/oauth2").permitAll()
-                        .requestMatchers("/chat").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/chat/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/friends").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers(PRIVATE_URLS).hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
                         .anyRequest().authenticated()
         );
 
