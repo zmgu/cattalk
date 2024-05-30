@@ -1,139 +1,142 @@
-import './Chat.css'
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom'
-import { useLocation } from 'react-router-dom';
+import './Chat.css';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
-
+import { Client } from '@stomp/stompjs';
 import { faPaperclip, faPaperPlane, faArrowLeft, faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
 
+import { LoginContext } from '../../contexts/LoginContextProvider';
+
 const Chat = () => {
-    
+    console.log('chat')
+
     const location = useLocation();
     const [roomDetails, setRoomDetails] = useState(location.state || {});
-
     const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState([]);
     const chatContainerRef = useRef(null);
     const chatInputRef = useRef(null);
     const chatMessageRef = useRef(null);
+    const stompClient = useRef(null);
+    const { userInfo } = useContext(LoginContext);
+    console.log(`${userInfo.nickname}`)
+
+    useEffect(() => {
+        console.log(`useEffect 실행중`);
+
+        const accessToken = localStorage.getItem('Authorization');
+        console.log(`accessToken : ${accessToken}`);
+
+        adjustChatMessageHeight();
+        window.addEventListener('resize', adjustChatMessageHeight);
+
+        try {
+            const socket = new SockJS('/ws');
+            stompClient.current = new Client({
+                webSocketFactory: () => socket,
+                connectHeaders: {
+                    'Authorization' : accessToken
+                },
+                onConnect: () => {
+                    stompClient.current.subscribe('/sub/public', (message) => {
+                        if (message.body) {
+                            const receivedMessage = JSON.parse(message.body);
+                            setMessages(prevMessages => [...prevMessages, receivedMessage]);
+                        }
+                    });
+                }
+            });
+
+            stompClient.current.activate();
+        } catch(error) {
+            console.error(`웹소켓 연결 에러`);
+        }
+
+        return () => {
+            window.removeEventListener('resize', adjustChatMessageHeight);
+            if (stompClient.current) {
+                stompClient.current.deactivate();
+            }
+        };
+    }, []);
 
     const handleMessageChange = (event) => {
         const textarea = event.target;
-        textarea.style.height = 'auto'; // 높이를 자동으로 조절하기 전에 초기화
-        const maxHeight = 200; // 최대 높이 설정
-        const singleLineHeight = 18; // 한 줄의 높이 가정
-        // textarea의 실제 내용 높이 계산
+        textarea.style.height = 'auto';
+        const maxHeight = 200;
+        const singleLineHeight = 18;
         const actualHeight = Math.min(textarea.scrollHeight, maxHeight);
-    
-        if (actualHeight <= singleLineHeight * 2) { // 내용이 2줄 이하일 경우
-            textarea.style.height = `${singleLineHeight}px`; // 높이를 18px로 설정
+
+        if (actualHeight <= singleLineHeight * 2) {
+            textarea.style.height = `${singleLineHeight}px`;
         } else {
-            textarea.style.height = `${actualHeight}px`; // 그 외의 경우, 실제 내용 높이로 설정
+            textarea.style.height = `${actualHeight}px`;
         }
         textarea.style.overflowY = textarea.scrollHeight > maxHeight ? 'auto' : 'hidden';
         setMessage(event.target.value);
 
-        // chat-input 컨테이너의 높이 조절
         if (chatInputRef.current) {
-            // chat-input 컨테이너의 높이를 textarea의 새 높이 + 패딩 등을 고려하여 조절
-            chatInputRef.current.style.height = `auto`; // 먼저 auto로 설정하여 컨테이너가 내용을 수용할 수 있도록 함
-            const newInputHeight = textarea.offsetHeight + 20; // 예시: textarea의 offsetHeight에 20px의 패딩 또는 여백을 추가
+            chatInputRef.current.style.height = 'auto';
+            const newInputHeight = textarea.offsetHeight + 20;
             chatInputRef.current.style.height = `${newInputHeight}px`;
         }
     };
 
     const adjustChatMessageHeight = () => {
         if (chatContainerRef.current && chatInputRef.current && chatMessageRef.current) {
-            const containerHeight = chatContainerRef.current.offsetHeight; // chat-container의 전체 높이
-            const inputHeight = chatInputRef.current.offsetHeight; // chat-input의 동적 높이
-            const headerHeight = 70; // chat-header의 고정된 높이
-            const messageHeight = containerHeight - inputHeight - headerHeight; // chat-message 영역의 새 높이 계산
-            chatMessageRef.current.style.height = `${messageHeight}px`; // chat-message 영역의 높이 조정
+            const containerHeight = chatContainerRef.current.offsetHeight;
+            const inputHeight = chatInputRef.current.offsetHeight;
+            const headerHeight = 70;
+            const messageHeight = containerHeight - inputHeight - headerHeight;
+            chatMessageRef.current.style.height = `${messageHeight}px`;
         }
     };
-    
-    const stompClient = useRef(null);
 
-    useEffect(() => {
-        adjustChatMessageHeight();
-        // 창 크기 조정에 대응하기 위한 이벤트 리스너 추가
-        window.addEventListener('resize', adjustChatMessageHeight);
-        return () => {
-            window.removeEventListener('resize', adjustChatMessageHeight);
-        };
-
-        const connectWebSocket = () => {
-            const serverUrl = 'http://localhost:8080/chat';
-            const socket = new SockJS(serverUrl);
-            stompClient.current = Stomp.over(socket);
-            stompClient.current.connect({}, onConnected, onError);
-        };
-
-        const onConnected = () => {
-            stompClient.current.subscribe(`/sub/chat/room/${roomDetails.roomId}`, onMessageReceived);
-        };
-
-        const onMessageReceived = (msg) => {
-            const messageData = JSON.parse(msg.body);
-            setMessages(prevMessages => [...prevMessages, messageData]);
-        };
-
-        const onError = (error) => {
-            console.error('WebSocket Connection Error', error);
-        };
-
-        connectWebSocket();
-        return () => {
-            if (stompClient.current) {
-                stompClient.current.disconnect();
-            }
-        };
-
-    }, []);
-    
-    const sendMessage = (content) => {
+    const sendMessage = () => {
         if (stompClient.current && stompClient.current.connected) {
             const chatMessage = {
                 roomId: roomDetails.roomId,
-                content: content,
-                senderUserId: '123',
+                content: message,
+                senderUserId: userInfo.userId,
                 type: 'CHAT'
             };
-            stompClient.current.send(`/pub/chat/send`, {}, JSON.stringify(chatMessage));
+            stompClient.current.publish({ destination: '/pub/chat.sendMessage', body: JSON.stringify(chatMessage) });
+            setMessage('');
         }
     };
 
     return (
-        <div className='chat-container'  ref={chatContainerRef}>
+        <div className='chat-container' ref={chatContainerRef}>
             <div className='chat-header'>
                 <div className='chat-header-left'>
-                    <Link to='/'><FontAwesomeIcon icon= {faArrowLeft} className='chat-header-icon' /></Link>
+                    <Link to='/'><FontAwesomeIcon icon={faArrowLeft} className='chat-header-icon' /></Link>
                 </div>
                 <div className='chat-header-center'>
                     <div className=''>{roomDetails.roomName}</div>
                 </div>
                 <div className='chat-header-right'>
-                    <FontAwesomeIcon icon= {faMagnifyingGlass} className='chat-header-icon' />
-                    <FontAwesomeIcon icon= {faBars} className='chat-header-icon' />
+                    <FontAwesomeIcon icon={faMagnifyingGlass} className='chat-header-icon' />
+                    <FontAwesomeIcon icon={faBars} className='chat-header-icon' />
                 </div>
             </div>
             <div className='chat-message' ref={chatMessageRef}>
-
-                <div className=''></div>
-                <div className=''></div>
-                <div className=''></div>
-
+                {messages.map((msg, index) => (
+                    <div key={index} className='message'>
+                        <div className='message-sender'>{msg.senderUserId}</div>
+                        <div className='message-content'>{msg.content}</div>
+                    </div>
+                ))}
             </div>
             <div className='chat-input' ref={chatInputRef}>
-                <button className='file-attach-button'><FontAwesomeIcon icon= {faPaperclip} /></button>
-                    <textarea
-                        className='message-input'
-                        value={message}
-                        onChange={handleMessageChange}
-                        rows={1}
-                    />
-                    <button className='send-message-button'><FontAwesomeIcon icon= {faPaperPlane} className='chat-input-icon'/></button>
+                <button className='file-attach-button'><FontAwesomeIcon icon={faPaperclip} /></button>
+                <textarea
+                    className='message-input'
+                    value={message}
+                    onChange={handleMessageChange}
+                    rows={1}
+                />
+                <button className='send-message-button' onClick={sendMessage}><FontAwesomeIcon icon={faPaperPlane} className='chat-input-icon' /></button>
             </div>
         </div>
     );
