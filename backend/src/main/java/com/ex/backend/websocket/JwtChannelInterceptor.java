@@ -1,4 +1,4 @@
-package com.ex.backend.config;
+package com.ex.backend.websocket;
 
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import lombok.RequiredArgsConstructor;
