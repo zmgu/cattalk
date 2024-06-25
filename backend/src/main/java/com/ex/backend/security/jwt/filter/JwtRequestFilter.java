@@ -27,12 +27,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
         // 헤더에서 accessToken 추출
         String accessToken = request.getHeader("authorization");
         String requestURI = request.getRequestURI();
+        logger.info(" requestURI: " + requestURI);
 
-        if (accessToken == null && requestURI.equals("/auth/reissue")) {
+        if(requestURI.startsWith("/stomp/ws")) {
+            logger.info(" stomp 경로로 요청 옴 ");
+            filterChain.doFilter(request, response);
+            return;
+
+        } else if (accessToken == null && requestURI.equals("/auth/reissue")) {
             // 엑세스 토큰이 없고, 재발급 경로 요청이었을 경우 다음 필터로 이동
             filterChain.doFilter(request, response);
             return;
@@ -40,12 +45,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         } else if(accessToken == null && !requestURI.equals("/auth/reissue")) {
             // 엑세스 토큰이 없고, 재발급 경로 요청이 아니었을 경우 상태 코드 401
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            logger.info("else if(accessToken == null && !requestURI.equals(\"/auth/reissue\"))");
             return;
         }
 
         // 엑세스 토큰 접두사 제거
         accessToken = accessToken.substring(7).trim();
-        logger.info("accessToken :" + accessToken);
 
         // 토큰 만료 여부 확인
         try {
