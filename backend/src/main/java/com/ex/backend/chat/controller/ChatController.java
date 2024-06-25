@@ -49,17 +49,18 @@ public class ChatController {
         return ResponseEntity.ok(chatRoomName);
     }
 
-    @MessageMapping("/sendMessage")
-    @SendTo("/sub/public")  // 메시지를 /sub/public 경로로 방송
+    @MessageMapping("/send")
+    @SendTo("/stomp/sub/chat")  // 메시지를 /sub/chat 경로로 방송
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
         chatService.saveMessage(chatMessage);
         return chatMessage;
     }
-
-    @MessageMapping("/addUser")
-    @SendTo("/sub/public")
-    public ChatMessage addUser(@Payload ChatMessage chatMessage) {
-//        chatMessage.setContent(chatMessage.getSender() + " joined!");
-        return chatMessage;
-    }
 }
+//
+//    @MessageMapping("/ws")
+//    @SendTo("/sub/public")
+//    public ChatMessage addUser(@Payload ChatMessage chatMessage) {
+////        chatMessage.setContent(chatMessage.getSender() + " joined!");
+//        return chatMessage;
+//    }
+//}

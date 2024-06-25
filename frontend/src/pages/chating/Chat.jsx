@@ -9,8 +9,6 @@ import { faPaperclip, faPaperPlane, faArrowLeft, faMagnifyingGlass, faBars } fro
 import { LoginContext } from '../../contexts/LoginContextProvider';
 
 const Chat = () => {
-    console.log('chat')
-
     const location = useLocation();
     const [roomDetails, setRoomDetails] = useState(location.state || {});
     const [message, setMessage] = useState('');
@@ -20,38 +18,46 @@ const Chat = () => {
     const chatMessageRef = useRef(null);
     const stompClient = useRef(null);
     const { userInfo } = useContext(LoginContext);
-    console.log(`${userInfo.nickname}`)
 
     useEffect(() => {
-        console.log(`useEffect 실행중`);
-
-        const accessToken = localStorage.getItem('Authorization');
-        console.log(`accessToken : ${accessToken}`);
 
         adjustChatMessageHeight();
         window.addEventListener('resize', adjustChatMessageHeight);
 
-        try {
-            const socket = new SockJS('/ws');
+        const connect = () => {
+            const token = localStorage.getItem('Authorization');
+            const socket = new SockJS(`http://localhost:8888/stomp/ws`);
+
             stompClient.current = new Client({
                 webSocketFactory: () => socket,
                 connectHeaders: {
-                    'Authorization' : accessToken
+                    Authorization: `Bearer ${token}`
                 },
                 onConnect: () => {
-                    stompClient.current.subscribe('/sub/public', (message) => {
+                    console.log('Connected');
+                    stompClient.current.subscribe('/stomp/sub/chat', (message) => {
                         if (message.body) {
                             const receivedMessage = JSON.parse(message.body);
                             setMessages(prevMessages => [...prevMessages, receivedMessage]);
                         }
                     });
+                },
+                onStompError: (frame) => {
+                    console.error('Broker reported error: ' + frame.headers['message']);
+                    console.error('Additional details: ' + frame.body);
+                },
+                onWebSocketClose: (event) => {
+                    console.error('WebSocket closed with reason: ' + event.reason);
+                },
+                onWebSocketError: (event) => {
+                    console.error('WebSocket error: ', event);
                 }
             });
 
             stompClient.current.activate();
-        } catch(error) {
-            console.error(`웹소켓 연결 에러`);
-        }
+        };
+
+        connect();
 
         return () => {
             window.removeEventListener('resize', adjustChatMessageHeight);
@@ -101,7 +107,9 @@ const Chat = () => {
                 senderUserId: userInfo.userId,
                 type: 'CHAT'
             };
-            stompClient.current.publish({ destination: '/pub/chat.sendMessage', body: JSON.stringify(chatMessage) });
+            stompClient.current.publish({ 
+                destination: '/stomp/pub/send', 
+                body: JSON.stringify(chatMessage) });
             setMessage('');
         }
     };
