@@ -40,9 +40,9 @@ public class SecurityConfig {
     private final RefreshTokenRedis refreshTokenRedis;
     private final CookieUtil cookieUtil;
 
-    public static final String[] PUBLIC_URLS = { "/", "/login", "/oauth2" };
-    public static final String[] PRIVATE_URLS = { "/auth/reissue", "/chat", "/chat/**", "/oauth2", "/users/**", "/ws", "/ws/**" };
-    public static final String[] ADMIN_URLS = { "/admin/**" };
+    public static final String[] PUBLIC_URLS  = { "/", "/**", "/login", "/oauth2", "/stomp/**" };
+    public static final String[] PRIVATE_URLS = { "/auth/reissue", "/oauth2", "/users/**", "/chat", "/chat/**" };
+    public static final String[] ADMIN_URLS   = { "/admin/**" };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -73,9 +73,6 @@ public class SecurityConfig {
 
         // 필터 설정 ✅
         http
-//                .addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtProvider)
-//                        , UsernamePasswordAuthenticationFilter.class)
-
                 .addFilterBefore(new JwtRequestFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtProvider, refreshTokenRedis, cookieUtil), LogoutFilter.class)
         ;
@@ -91,6 +88,7 @@ public class SecurityConfig {
         // 인가 설정 ✅
         http.authorizeHttpRequests( authorizeRequests ->
                 authorizeRequests
+
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers(PRIVATE_URLS).hasAnyRole("USER", "ADMIN")
@@ -98,12 +96,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
         );
 
-        // 인증 방식 설정 ✅
-//        http.userDetailsService(customUserDetailService);
-
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
