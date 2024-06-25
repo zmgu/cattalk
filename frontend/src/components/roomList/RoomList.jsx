@@ -23,7 +23,7 @@ const RoomList = () => {
         };
 
         ChatRoomList();
-    }, []);
+    }, [userInfo]);
 
     const handleDoubleClick = async (roomName, roomId) => {
         navigate(`/chat/${roomId}`, { 
