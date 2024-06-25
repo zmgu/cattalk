@@ -9,21 +9,27 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.util.logging.Logger;
+
 @Component
 @RequiredArgsConstructor
 public class JwtChannelInterceptor implements ChannelInterceptor {
 
     private final JwtProvider jwtProvider;
+    private final Logger logger = Logger.getLogger(JwtChannelInterceptor.class.getName());
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        logger.info("JwtChannelInterceptor 시작");
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         String jwtToken = accessor.getFirstNativeHeader("Authorization");
+        logger.info("jwtToken : " + jwtToken);
 
-        if (jwtToken != null && jwtProvider.isExpired(jwtToken)) {
-            Authentication authentication = jwtProvider.getAuthentication(jwtToken);
-            accessor.setUser(authentication);
-        }
+        /*
+        *
+        *   토큰 검증 로직 추가 예정
+        *
+        * */
 
         return message;
     }
