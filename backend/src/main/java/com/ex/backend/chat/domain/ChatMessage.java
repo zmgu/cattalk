@@ -11,6 +11,7 @@ public class ChatMessage {
 
     private final MessageType type;
     private final Long senderUserId;
+    private final String senderNickname;
     private final String content;
     private final String roomId;
     private final Date sendTime;
