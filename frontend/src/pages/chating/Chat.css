@@ -1,3 +1,4 @@
+/* 기존 CSS */
 .chat-container {
     display: flex;
     flex-direction: column;
@@ -12,8 +13,6 @@
     background-color: white;
     box-sizing: border-box;
 }
-
-/* =================== 위 css 옮길 예정 =================== */
 
 .chat-header {
     width: 100%;
@@ -30,6 +29,7 @@
     height: 100%;
     width: 100px;
 }
+
 .chat-header-center {
     font-size: 20px;
     font-family: "Jua", sans-serif;
@@ -64,69 +64,94 @@
 
 .chat-message {
     flex-grow: 1;
-    overflow-y: auto; /* 내용이 넘치면 스크롤 생성 */
+    overflow-y: auto;
     background-color: #F9F9F9;
 }
 
 /* 말풍선 ui */
-/* 내가 친 채팅 */
 .my-chat {
-	position: relative;
-	background: #ffeb33;
-	border-radius: .4em;
+    position: relative;
+    background: #ffeb33;
+    border-radius: .4em;
+    margin-left: auto;
+    margin-right: 4.5%;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    padding: 10px;
+    width: fit-content;
+    max-width: 60%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
 }
 
 .my-chat:after {
-	content: '';
-	position: absolute;
-	right: 0;
-	top: 50%;
-	width: 0;
-	height: 0;
-	border: 20px solid transparent;
-	border-left-color: #ffeb33;
-	border-right: 0;
-	border-top: 0;
-	margin-top: -10px;
-	margin-right: -20px;
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 17px;
+    width: 0;
+    height: 0;
+    border: 14px solid transparent;
+    border-left-color: #ffeb33;
+    border-right: 0;
+    border-top: 0;
+    margin-top: -10px;
+    margin-right: -13px;
 }
 
-/* 상대방이 친 채팅 */
 .another-chat {
-	position: relative;
-	background: #33ccff;
-	border-radius: .4em;
+    position: relative;
+    background: #33ccff;
+    border-radius: .4em;
+    margin-right: auto;
+    margin-left: 4.5%;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    padding: 10px;
+    width: fit-content;
+    max-width: 60%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.another-chat-sender {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    margin-left: 5.5%;
+    text-align: left;
+    align-self: flex-start;
 }
 
 .another-chat:after {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 50%;
-	width: 0;
-	height: 0;
-	border: 20px solid transparent;
-	border-right-color: #33ccff;
-	border-left: 0;
-	border-top: 0;
-	margin-top: -10px;
-	margin-left: -20px;
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 17px;
+    width: 0;
+    height: 0;
+    border: 14px solid transparent;
+    border-right-color: #33ccff;
+    border-left: 0;
+    border-top: 0;
+    margin-top: -10px;
+    margin-left: -13px;
 }
 
-
-
-
-
-
-
+.message-content {
+    display: inline-block;
+    min-width: 15%;
+    max-width: 100%;
+    word-wrap: break-word;
+    flex: 1;
+}
 
 .chat-input {
     display: flex;
-    align-items: flex-start; /* 내부 요소의 높이를 맞춤 */
-    height: 50px; /* chat-input의 기본 높이 */
+    align-items: flex-start;
+    height: 50px;
     padding: 10px;
     box-sizing: border-box;
-    background-color: #f5f5f5; /* 취향에 따라 조정 가능 */
+    background-color: #f5f5f5;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
     background: white;
@@ -141,8 +166,8 @@
     border-radius: 4px;
     padding: 5px;
     margin: 0 10px;
-    resize: none; /* 사용자가 수동으로 크기 조정 못하게 함 */
-    overflow-y: hidden; /* 자동 높이 조정 시 스크롤바 숨김 */
+    resize: none;
+    overflow-y: hidden;
     font-family: "Noto Sans KR", sans-serif;
 }
 
@@ -152,7 +177,7 @@
 
 .file-attach-button, .send-message-button {
     border: none;
-    background-color: transparent; /* 취향에 따라 조정 가능 */
+    background-color: transparent;
     cursor: pointer;
     padding: 3px 10px;
     border-radius: 4px;
@@ -162,7 +187,7 @@
 
 .file-attach-button:hover, .send-message-button:hover {
     color: #5581d8;
-    transition: color 0.3s, filter 0.3s; /* 수정: transition 속성을 명확히 지정 */
+    transition: color 0.3s, filter 0.3s;
     filter: drop-shadow(0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
             drop-shadow(-0.5px -0.5px 0.5px rgba(146, 161, 192, 0.2))
             drop-shadow(-0.5px 0.5px 0.5px rgba(146, 161, 192, 0.2))
@@ -171,4 +196,21 @@
 
 .file-attach-button:not(:hover), .send-message-button:not(:hover) {
     transition: 0.6s;
+}
+
+.chat-message-detail {
+    display: flex;
+}
+
+.message-time {
+    font-size: 0.8em;
+    color: gray;
+}
+
+.my-time {
+    margin-left: 10px;
+}
+
+.another-time {
+    margin-right: 10px;
 }
