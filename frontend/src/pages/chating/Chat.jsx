@@ -44,7 +44,7 @@ const Chat = () => {
                 },
                 onConnect: () => {
                     console.log('Connected');
-                    stompClient.current.subscribe('/stomp/sub/chat', (message) => {
+                    stompClient.current.subscribe(`/stomp/sub/chat/${roomDetails.roomId}`, (message) => {
                         if (message.body) {
                             const receivedMessage = JSON.parse(message.body);
                             setMessages(prevMessages => [...prevMessages, receivedMessage]);
@@ -117,6 +117,9 @@ const Chat = () => {
     };
 
     const sendMessage = () => {
+        if (!message.trim()) {
+            return; // 메시지가 공백일 경우 함수 종료
+        }
         if (stompClient.current && stompClient.current.connected) {
             const chatMessage = {
                 roomId: roomDetails.roomId,
@@ -141,9 +144,6 @@ const Chat = () => {
             }
             adjustChatMessageHeight();
             scrollToBottom(); // 메시지를 보낸 후 스크롤을 맨 아래로 이동
-
-        console.log(messages);
-
         }
     };
 
@@ -185,17 +185,6 @@ const Chat = () => {
                     <FontAwesomeIcon icon={faBars} className='chat-header-icon' />
                 </div>
             </div>
-            {/* <div className='chat-message' ref={chatMessageRef}>
-                {messages.map((msg, index) => (
-                    <div key={index}>
-                        <div className={`${msg.senderUserId === userInfo.userId ? null : 'another-chat-sender'}`}>{msg.senderUserId === userInfo.userId ? null : msg.senderNickname}</div>
-
-                        <div className={`message ${msg.senderUserId === userInfo.userId ? 'my-chat' : 'another-chat'}`}>
-                            <div className='message-content'>{msg.content}</div>
-                        </div>
-                    </div>
-                ))}
-            </div> */}
             <div className='chat-message' ref={chatMessageRef}>
                 {messages.map((msg, index) => {
                     const isMyMessage = msg.senderUserId === userInfo.userId;
@@ -206,23 +195,43 @@ const Chat = () => {
                         new Date(messages[index + 1]?.sendTime).getMinutes() !== new Date(msg.sendTime).getMinutes());
 
                     return (
-                        <div key={index} className="chat-message-detail">
+                        <div key={index}>
                             {!isMyMessage && (
                                 <div className="another-chat-sender">
                                     {msg.senderNickname}
                                 </div>
                             )}
-                            <div className={`message ${isMyMessage ? 'my-chat' : 'another-chat'}`}>
-                                <div className='message-content'>
-                                    {msg.content}
-                                </div>
-                                
-                            </div>
-                            {showTime && (
-                                    <div className={`message-time ${isMyMessage ? 'my-time' : 'another-time'}`}>
-                                        {formatTime(msg.sendTime)}
-                                    </div>
+                            <div className={`chat-message-detail ${isMyMessage ? 'my-message' : 'another-message'}`}>
+                                {isMyMessage ? (
+                                    <>
+                                        <div className="chat-space"></div>
+                                        {showTime && (
+                                            <div className={`message-time my-time`}>
+                                                {formatTime(msg.sendTime)}
+                                            </div>
+                                        )}
+                                        <div className="message my-chat">
+                                            <div className='message-content'>
+                                                {msg.content}
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="message another-chat">
+                                            <div className='message-content'>
+                                                {msg.content}
+                                            </div>
+                                        </div>
+                                        {showTime && (
+                                            <div className={`message-time another-time`}>
+                                                {formatTime(msg.sendTime)}
+                                            </div>
+                                        )}
+                                        <div className="chat-space"></div>
+                                    </>
                                 )}
+                            </div>
                         </div>
                     );
                 })}

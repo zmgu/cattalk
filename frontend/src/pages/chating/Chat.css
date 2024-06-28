@@ -71,17 +71,18 @@
 /* 말풍선 ui */
 .my-chat {
     position: relative;
-    background: #ffeb33;
+    background: #fdee5f;
     border-radius: .4em;
     margin-left: auto;
     margin-right: 4.5%;
-    margin-bottom: 5px;
     margin-top: 5px;
     padding: 10px;
     width: fit-content;
     max-width: 60%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     font-size: 14px;
+
+    justify-content: flex-end; /* 여백, 시간, 메시지 순서 */
 }
 
 .my-chat:after {
@@ -92,7 +93,7 @@
     width: 0;
     height: 0;
     border: 14px solid transparent;
-    border-left-color: #ffeb33;
+    border-left-color: #fdee5f;
     border-right: 0;
     border-top: 0;
     margin-top: -10px;
@@ -101,23 +102,25 @@
 
 .another-chat {
     position: relative;
-    background: #33ccff;
+    background: #c9eaf5;
     border-radius: .4em;
     margin-right: auto;
     margin-left: 4.5%;
-    margin-bottom: 5px;
-    margin-top: 5px;
+    margin-top: 2px;
     padding: 10px;
     width: fit-content;
     max-width: 60%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+
+    justify-content: flex-start; /* 메시지, 시간, 여백 순서 */
 }
 
 .another-chat-sender {
-    font-size: 12px;
+    font-size: 10px;
     color: #666;
     margin-top: 5px;
-    margin-left: 5.5%;
+    margin-left: 6%;
     text-align: left;
     align-self: flex-start;
 }
@@ -130,7 +133,7 @@
     width: 0;
     height: 0;
     border: 14px solid transparent;
-    border-right-color: #33ccff;
+    border-right-color: #c9eaf5;
     border-left: 0;
     border-top: 0;
     margin-top: -10px;
@@ -200,17 +203,29 @@
 
 .chat-message-detail {
     display: flex;
+    align-items: center;
+    margin-bottom: 3px;
 }
 
 .message-time {
-    font-size: 0.8em;
+    font-size: 10px;
     color: gray;
+    text-align: bottom;
+    margin-top: auto;
 }
 
 .my-time {
-    margin-left: 10px;
+    justify-content: right;
+    text-align: bottom;
+    margin-right: 5px;
 }
 
 .another-time {
     margin-right: 10px;
+    text-align: bottom;
+    margin-left: 5px;
+}
+
+.chat-space {
+    flex: 1; /* 여백을 위한 공간 */
 }
