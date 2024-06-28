@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class ChatController {
 
     private final ChatRoomService chatRoomService;
     private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/rooms")
     public ResponseEntity<String> createChatRoom(@RequestBody CreateChatRoomDto createChatRoomDto) {
@@ -50,17 +52,9 @@ public class ChatController {
     }
 
     @MessageMapping("/send")
-    @SendTo("/stomp/sub/chat")  // 메시지를 /sub/chat 경로로 방송
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
-        chatService.saveMessage(chatMessage);
-        return chatMessage;
+    public void sendMessage(@Payload ChatMessage chatMessage) {
+        //        chatService.saveMessage(chatMessage);
+        String destination = "/stomp/sub/chat/" + chatMessage.getRoomId();
+        messagingTemplate.convertAndSend(destination, chatMessage);
     }
 }
-//
-//    @MessageMapping("/ws")
-//    @SendTo("/sub/public")
-//    public ChatMessage addUser(@Payload ChatMessage chatMessage) {
-////        chatMessage.setContent(chatMessage.getSender() + " joined!");
-//        return chatMessage;
-//    }
-//}
