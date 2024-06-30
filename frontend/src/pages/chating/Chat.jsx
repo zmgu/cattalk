@@ -2,10 +2,9 @@ import './Chat.css';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SockJS from 'sockjs-client';
-import { Client } from '@stomp/stompjs';
 import { faPaperclip, faPaperPlane, faArrowLeft, faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
 import { LoginContext } from '../../contexts/LoginContextProvider';
+import { connectWebSocket, disconnectWebSocket, sendMessage } from './WebSocket';
 
 const Chat = () => {
     const location = useLocation();
@@ -33,46 +32,18 @@ const Chat = () => {
         adjustChatMessageHeight();
         window.addEventListener('resize', adjustChatMessageHeight);
 
-        const connect = () => {
-            const token = localStorage.getItem('Authorization');
-            const socket = new SockJS(`http://localhost:8888/stomp/ws`);
+        const token = localStorage.getItem('Authorization');
 
-            stompClient.current = new Client({
-                webSocketFactory: () => socket,
-                connectHeaders: {
-                    Authorization: `Bearer ${token}`
-                },
-                onConnect: () => {
-                    console.log('Connected');
-                    stompClient.current.subscribe(`/stomp/sub/chat/${roomDetails.roomId}`, (message) => {
-                        if (message.body) {
-                            const receivedMessage = JSON.parse(message.body);
-                            setMessages(prevMessages => [...prevMessages, receivedMessage]);
-                        }
-                    });
-                },
-                onStompError: (frame) => {
-                    console.error('Broker reported error: ' + frame.headers['message']);
-                    console.error('Additional details: ' + frame.body);
-                },
-                onWebSocketClose: (event) => {
-                    console.error('WebSocket closed with reason: ' + event.reason);
-                },
-                onWebSocketError: (event) => {
-                    console.error('WebSocket error: ', event);
-                }
-            });
-
-            stompClient.current.activate();
-        };
-
-        connect();
+        connectWebSocket(
+            roomDetails.roomId,
+            token,
+            (receivedMessage) => setMessages(prevMessages => [...prevMessages, receivedMessage]),
+            (error) => console.error('WebSocket error:', error)
+        );
 
         return () => {
             window.removeEventListener('resize', adjustChatMessageHeight);
-            if (stompClient.current) {
-                stompClient.current.deactivate();
-            }
+            disconnectWebSocket();
         };
     }, []);
 

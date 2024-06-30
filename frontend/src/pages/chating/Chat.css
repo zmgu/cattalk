@@ -61,14 +61,53 @@
     margin: 30px 8px 5px 10px;
     color: #5c6898;
 }
-
+/* ======================================= 채팅 리스트 ======================================= */
 .chat-message {
     flex-grow: 1;
     overflow-y: auto;
     background-color: #F9F9F9;
 }
 
-/* 말풍선 ui */
+.chat-message-detail {
+    display: flex;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.message-content {
+    display: inline-block;
+    min-width: 15%;
+    max-width: 100%;
+    word-wrap: break-word;
+    flex: 1;
+}
+
+.chat-space {
+    flex: 1; /* 메시지/시간/여백, 여백/시간/메시지을 위한 여백 */
+}
+
+/* ========================================= 채팅 시간 ========================================= */
+.message-time {
+    font-size: 10px;
+    color: gray;
+    text-align: bottom;
+    margin-top: auto;
+}
+
+.my-time {
+    justify-content: right;
+    text-align: bottom;
+    margin-right: 5px;
+}
+
+.another-time {
+    margin-right: 10px;
+    text-align: bottom;
+    margin-left: 5px;
+}
+
+
+/* ========================================= 말풍선 ========================================= */
 .my-chat {
     position: relative;
     background: #fdee5f;
@@ -116,15 +155,6 @@
     justify-content: flex-start; /* 메시지, 시간, 여백 순서 */
 }
 
-.another-chat-sender {
-    font-size: 10px;
-    color: #666;
-    margin-top: 5px;
-    margin-left: 6%;
-    text-align: left;
-    align-self: flex-start;
-}
-
 .another-chat:after {
     content: '';
     position: absolute;
@@ -140,14 +170,18 @@
     margin-left: -13px;
 }
 
-.message-content {
-    display: inline-block;
-    min-width: 15%;
-    max-width: 100%;
-    word-wrap: break-word;
-    flex: 1;
+.another-chat-sender {
+    font-size: 10px;
+    color: #666;
+    margin-top: 5px;
+    margin-left: 6%;
+    text-align: left;
+    align-self: flex-start;
 }
 
+
+
+/* ========================================= 하단 영역 ========================================= */
 .chat-input {
     display: flex;
     align-items: flex-start;
@@ -201,31 +235,3 @@
     transition: 0.6s;
 }
 
-.chat-message-detail {
-    display: flex;
-    align-items: center;
-    margin-bottom: 3px;
-}
-
-.message-time {
-    font-size: 10px;
-    color: gray;
-    text-align: bottom;
-    margin-top: auto;
-}
-
-.my-time {
-    justify-content: right;
-    text-align: bottom;
-    margin-right: 5px;
-}
-
-.another-time {
-    margin-right: 10px;
-    text-align: bottom;
-    margin-left: 5px;
-}
-
-.chat-space {
-    flex: 1; /* 여백을 위한 공간 */
-}
