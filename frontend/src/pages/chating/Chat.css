@@ -27,7 +27,6 @@
 
 .chat-header-center {
     height: 100%;
-    width: 100px;
 }
 
 .chat-header-center {
@@ -39,15 +38,6 @@
     color: #5c6898;
     padding-top: 28px;
     margin-left: 20px;
-}
-
-.temp-img {
-    width: 100%;
-    height: 100%;
-    background-image: url("../../assets/cat/temptation.gif");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
 }
 
 .chat-header-right {

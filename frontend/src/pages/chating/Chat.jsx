@@ -14,7 +14,6 @@ const Chat = () => {
     const chatContainerRef = useRef(null);
     const chatInputRef = useRef(null);
     const chatMessageRef = useRef(null);
-    const stompClient = useRef(null);
     const { userInfo } = useContext(LoginContext);
 
     useEffect(() => {
@@ -87,47 +86,31 @@ const Chat = () => {
         }
     };
 
-    const sendMessage = () => {
-        if (!message.trim()) {
-            return; // 메시지가 공백일 경우 함수 종료
-        }
-        if (stompClient.current && stompClient.current.connected) {
-            const chatMessage = {
-                roomId: roomDetails.roomId,
-                content: message,
-                senderUserId: userInfo.userId,
-                senderNickname: userInfo.nickname,
-                type: 'CHAT',
-                sendTime: new Date().toISOString()
-            };
-            stompClient.current.publish({ 
-                destination: '/stomp/pub/send', 
-                body: JSON.stringify(chatMessage) 
-            });
-            setMessage('');
-            
-            if (chatInputRef.current) {
-                const inputElements = chatInputRef.current.getElementsByClassName('message-input');
-                if (inputElements.length > 0) {
-                    inputElements[0].style.height = '18px';  // textarea의 초기 높이 설정
-                }
-                chatInputRef.current.style.height = '50px';  // chat-input의 초기 높이 설정
+    const handleSendMessage = () => {
+        sendMessage(roomDetails.roomId, message, userInfo);
+        setMessage('');
+        
+        if (chatInputRef.current) {
+            const inputElements = chatInputRef.current.getElementsByClassName('message-input');
+            if (inputElements.length > 0) {
+                inputElements[0].style.height = '18px';
             }
-            adjustChatMessageHeight();
-            scrollToBottom(); // 메시지를 보낸 후 스크롤을 맨 아래로 이동
+            chatInputRef.current.style.height = '50px';
         }
+        adjustChatMessageHeight();
+        scrollToBottom();
     };
 
-    const scrollToBottom = () => {
+    const scrollToBottom = () => {  // 스크롤 하단 이동
         if (chatMessageRef.current) {
             chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight;
         }
     };
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event) => {  // 엔터키로 메시지 전송
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
-            sendMessage();
+            handleSendMessage();
         }
     };
 
@@ -141,9 +124,10 @@ const Chat = () => {
         return `${ampm} ${formattedHours}:${formattedMinutes}`;
     };
     
-    
     return (
         <div className='chat-container' ref={chatContainerRef}>
+
+            {/* 상단 영역 */}
             <div className='chat-header'>
                 <div className='chat-header-left'>
                     <Link to='/'><FontAwesomeIcon icon={faArrowLeft} className='chat-header-icon' /></Link>
@@ -156,18 +140,24 @@ const Chat = () => {
                     <FontAwesomeIcon icon={faBars} className='chat-header-icon' />
                 </div>
             </div>
+
+            {/* 메시지 출력 */}
             <div className='chat-message' ref={chatMessageRef}>
                 {messages.map((msg, index) => {
                     const isMyMessage = msg.senderUserId === userInfo.userId;
-
                     const showTime = 
                         index === messages.length - 1 || 
                         (messages[index + 1]?.senderUserId !== msg.senderUserId || 
                         new Date(messages[index + 1]?.sendTime).getMinutes() !== new Date(msg.sendTime).getMinutes());
 
+                    const showNickname = 
+                        index === 0 ||
+                        messages[index - 1]?.senderUserId !== msg.senderUserId ||
+                        new Date(messages[index - 1]?.sendTime).getMinutes() !== new Date(msg.sendTime).getMinutes();
+
                     return (
                         <div key={index}>
-                            {!isMyMessage && (
+                            {!isMyMessage && showNickname && (
                                 <div className="another-chat-sender">
                                     {msg.senderNickname}
                                 </div>
@@ -207,7 +197,8 @@ const Chat = () => {
                     );
                 })}
             </div>
-
+            
+            {/* 입력 영역 */}
             <div className='chat-input' ref={chatInputRef}>
                 <button className='file-attach-button'><FontAwesomeIcon icon={faPaperclip} /></button>
                 <textarea
@@ -217,7 +208,7 @@ const Chat = () => {
                     onKeyDown={handleKeyDown}
                     rows={1}
                 />
-                <button className='send-message-button' onClick={sendMessage}><FontAwesomeIcon icon={faPaperPlane} className='chat-input-icon' /></button>
+                <button className='send-message-button' onClick={handleSendMessage}><FontAwesomeIcon icon={faPaperPlane} className='chat-input-icon' /></button>
             </div>
         </div>
     );
