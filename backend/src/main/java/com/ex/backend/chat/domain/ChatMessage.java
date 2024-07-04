@@ -1,20 +1,24 @@
 package com.ex.backend.chat.domain;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Date;
 
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChatMessage {
 
-    private final MessageType type;
-    private final Long senderUserId;
-    private final String senderNickname;
-    private final String content;
-    private final String roomId;
-    private final Date sendTime;
+    private Long id;
+    private MessageType type;
+    private Long senderUserId;
+    private String senderNickname;
+    private String content;
+    private String roomId;
+    private Date sendTime;
+    private String readBy;
 
     public enum MessageType {
         CHAT,
