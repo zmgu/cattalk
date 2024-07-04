@@ -1,8 +1,17 @@
 import privateApi from './privateApi';
 
 // 채팅방 생성
-export const createChatRoom = (myUserId, myNickname, friendUserId, friendNickname) => 
-    privateApi.post(`/chat/rooms`, { myUserId, myNickname,friendUserId, friendNickname });
+export const createChatRoom = (
+      myUserId
+    , myNickname
+    , friendUserId
+    , friendNickname
+    ) => privateApi.post(`/chat/rooms`, { 
+          myUserId
+        , myNickname
+        , friendUserId
+        , friendNickname 
+    });
 
 // 내 채팅방 리스트
 export const chatRoomList = (userId) =>
@@ -10,17 +19,16 @@ export const chatRoomList = (userId) =>
         params: {
             userId: userId
         }
-    }
-);
+    });
 
 // 채팅방 찾기
 export const findChatRoom = (myUserId, friendUserId) => 
     privateApi.get(`/chat/rooms/find`, {         
         params: {
-        myUserId: myUserId,
-        friendUserId: friendUserId
-    } 
-});
+            myUserId: myUserId,
+            friendUserId: friendUserId
+        } 
+    });
 
 // 채팅방 이름 찾기
 export const findChatRoomName = (roomId, userId) => 
@@ -29,5 +37,13 @@ export const findChatRoomName = (roomId, userId) =>
             roomId: roomId,
             userId: userId
         }
-    }
-);
+    });
+
+
+// 메시지 불러오기
+export const getMessages = (roomId) =>
+    privateApi.get(`/chat/rooms/${roomId}/messages`, {
+        params: {
+            roomId: roomId
+        }
+    });
