@@ -4,6 +4,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperclip, faPaperPlane, faArrowLeft, faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
 import { LoginContext } from '../../contexts/LoginContextProvider';
+import { getMessages } from '../../apis/chat';
 import { connectWebSocket, disconnectWebSocket, sendMessage } from './WebSocket';
 
 const Chat = () => {
@@ -32,6 +33,19 @@ const Chat = () => {
         window.addEventListener('resize', adjustChatMessageHeight);
 
         const token = localStorage.getItem('Authorization');
+        
+        const getAllMessage = async () => {
+            try {
+                const response = await getMessages(roomDetails.roomId);
+                setMessages(response.data);
+
+            } catch (error) {
+                console.error("메시지를 불러오는데 실패했습니다.", error);
+            }
+        };
+
+        getAllMessage();
+        scrollToBottom();
 
         connectWebSocket(
             roomDetails.roomId,
@@ -44,7 +58,7 @@ const Chat = () => {
             window.removeEventListener('resize', adjustChatMessageHeight);
             disconnectWebSocket();
         };
-    }, []);
+    }, [roomDetails.roomId]);
 
     const handleMessageChange = (event) => {
         const textarea = event.target;
