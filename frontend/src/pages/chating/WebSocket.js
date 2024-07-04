@@ -9,7 +9,7 @@ export const connectWebSocket = (roomId, token, onMessageReceived, onError) => {
     stompClient = new Client({
         webSocketFactory: () => socket,
         connectHeaders: {
-            Authorization: `Bearer ${token}`
+            Authorization: token
         },
         onConnect: () => {
             console.log('Connected');
