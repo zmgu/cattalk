@@ -1,11 +1,12 @@
 package com.ex.backend.chat.service;
 
-import com.ex.backend.chat.domain.ChatRoom;
-import com.ex.backend.chat.domain.ChatRoomName;
 import com.ex.backend.chat.dto.CreateChatRoomDto;
-import com.ex.backend.chat.dto.FindChatRoomDto;
-import com.ex.backend.chat.mapper.ChatRoomMapper;
-import com.ex.backend.chat.mapper.ChatRoomNameMapper;
+import com.ex.backend.chat.entity.ChatRoom;
+import com.ex.backend.chat.entity.ChatRoomName;
+import com.ex.backend.chat.entity.ChatRoomParticipant;
+import com.ex.backend.chat.repository.ChatRoomNameRepository;
+import com.ex.backend.chat.repository.ChatRoomParticipantRepository;
+import com.ex.backend.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +20,19 @@ import java.util.logging.Logger;
 public class ChatRoomService {
 
     private final Logger logger = Logger.getLogger(ChatRoomService.class.getName());
-    private final ChatRoomMapper chatRoomMapper;
-    private final ChatRoomNameMapper chatRoomNameMapper;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomParticipantRepository chatRoomParticipantRepository;
+    private final ChatRoomNameRepository chatRoomNameRepository;
 
     public String createChatRoom(CreateChatRoomDto createChatRoomDto) {
-
         String roomId = UUID.randomUUID().toString();
 
         try {
-            chatRoomMapper.createChatRoom(roomId);
+            ChatRoom chatRoom = ChatRoom.builder()
+                    .roomId(roomId)
+                    .build();
+
+            chatRoomRepository.save(chatRoom);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "createChatRoom 쿼리 에러", e);
         }
@@ -45,16 +50,25 @@ public class ChatRoomService {
                 .build();
 
         try {
-            chatRoomNameMapper.createChatRoomName(myChatRoomName);
-            chatRoomNameMapper.createChatRoomName(friendChatRoomName);
-
+            chatRoomNameRepository.save(myChatRoomName);
+            chatRoomNameRepository.save(friendChatRoomName);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "createChatRoomName 쿼리 에러", e);
         }
 
         try {
-            chatRoomMapper.insertChatRoomParticipant(roomId, createChatRoomDto.getMyUserId());
-            chatRoomMapper.insertChatRoomParticipant(roomId, createChatRoomDto.getFriendUserId());
+            ChatRoomParticipant myParticipant = ChatRoomParticipant.builder()
+                    .roomId(roomId)
+                    .participantId(createChatRoomDto.getMyUserId())
+                    .build();
+
+            ChatRoomParticipant friendParticipant = ChatRoomParticipant.builder()
+                    .roomId(roomId)
+                    .participantId(createChatRoomDto.getFriendUserId())
+                    .build();
+
+            chatRoomParticipantRepository.save(myParticipant);
+            chatRoomParticipantRepository.save(friendParticipant);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "insertChatRoomParticipant 쿼리 에러", e);
         }
@@ -63,40 +77,32 @@ public class ChatRoomService {
     }
 
     public String findChatRoom(Long myUserId, Long friendUserId) {
-
         String roomId = null;
-
         try {
-            roomId = chatRoomMapper.findChatRoom(myUserId, friendUserId);
-
+            roomId = chatRoomParticipantRepository.findChatRoomIdByUserIds(myUserId, friendUserId);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "findChatRoom 쿼리 에러", e);
         }
-
         return roomId;
     }
 
     public List<ChatRoomName> findChatRoomList(Long userId) {
         List<ChatRoomName> chatRoomList = null;
-
         try {
-            chatRoomList = chatRoomMapper.findChatRoomList(userId);
+            chatRoomList = chatRoomNameRepository.findByUserId(userId);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "findChatRoomList 쿼리 에러", e);
         }
-
         return chatRoomList;
     }
 
     public String findChatRoomName(String roomId, Long userId) {
         String chatRoomName = null;
-
         try {
-            chatRoomName = chatRoomNameMapper.findChatRoomName(roomId, userId);
+            chatRoomName = chatRoomNameRepository.findRoomNameByRoomIdAndUserId(roomId, userId);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "findChatRoomName 쿼리 에러", e);
         }
-
         return chatRoomName;
     }
 }

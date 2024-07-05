@@ -1,9 +1,8 @@
 package com.ex.backend.security.jwt.filter;
 
-import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import com.ex.backend.user.dto.PrincipalDetails;
-import com.ex.backend.user.dto.User;
+import com.ex.backend.user.entity.User;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

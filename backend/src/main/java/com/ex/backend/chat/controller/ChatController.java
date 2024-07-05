@@ -1,7 +1,7 @@
 package com.ex.backend.chat.controller;
 
-import com.ex.backend.chat.domain.ChatMessage;
-import com.ex.backend.chat.domain.ChatRoomName;
+import com.ex.backend.chat.entity.ChatMessage;
+import com.ex.backend.chat.entity.ChatRoomName;
 import com.ex.backend.chat.dto.CreateChatRoomDto;
 import com.ex.backend.chat.service.ChatRoomService;
 import com.ex.backend.chat.service.ChatService;

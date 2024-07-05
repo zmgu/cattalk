@@ -1,7 +1,7 @@
 package com.ex.backend.chat.service;
 
-import com.ex.backend.chat.domain.ChatMessage;
-import com.ex.backend.chat.mapper.ChatMessageMapper;
+import com.ex.backend.chat.entity.ChatMessage;
+import com.ex.backend.chat.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +12,15 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class ChatService {
 
-    private final ChatMessageMapper chatMessageMapper;
+    private final ChatMessageRepository chatMessageRepository;
     private final Logger logger = Logger.getLogger(ChatService.class.getName());
 
     public void saveMessage(ChatMessage chatMessage) {
-        chatMessageMapper.insertChatMessage(chatMessage);
+        chatMessageRepository.save(chatMessage);
     }
 
     public List<ChatMessage> getChatMessagesByRoomId(String roomId) {
-        return chatMessageMapper.getChatMessagesByRoomId(roomId);
+        return chatMessageRepository.findByRoomIdOrderBySendTimeAsc(roomId);
     }
 
 }

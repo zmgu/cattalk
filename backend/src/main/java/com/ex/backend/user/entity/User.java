@@ -1,5 +1,6 @@
-package com.ex.backend.user.dto;
+package com.ex.backend.user.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
@@ -9,9 +10,15 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
+
     private String username;
     private String nickname;
     private String password;

@@ -1,7 +1,7 @@
 package com.ex.backend.user.controller;
 
 import com.ex.backend.user.dto.PrincipalDetails;
-import com.ex.backend.user.dto.User;
+import com.ex.backend.user.entity.User;
 import com.ex.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,20 +25,17 @@ public class UserController {
      */
     @GetMapping("/info")
     public ResponseEntity<?> userInfo(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
         User user = principalDetails.getUser();
-
-        // 인증된 사용자 정보
-        if( user != null )
-            return new ResponseEntity<>(user, HttpStatus.OK);
-
-        // 인증 되지 않음
-        return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+        return user != null ? new ResponseEntity<>(user, HttpStatus.OK) : new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
     }
 
     @GetMapping
-    public List<User> selectUserList(@RequestParam(name = "userId") Long userId) throws Exception {
-
-        return userService.selectUserList(userId);
+    public ResponseEntity<List<User>> selectUserList(@RequestParam(name = "userId") Long userId) {
+        try {
+            List<User> userList = userService.selectUserList(userId);
+            return new ResponseEntity<>(userList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

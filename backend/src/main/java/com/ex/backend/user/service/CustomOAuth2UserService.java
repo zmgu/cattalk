@@ -5,8 +5,8 @@ import com.ex.backend.security.oauth2.dto.KakaoResponse;
 import com.ex.backend.security.oauth2.dto.NaverResponse;
 import com.ex.backend.security.oauth2.dto.OAuth2Response;
 import com.ex.backend.user.dto.PrincipalDetails;
-import com.ex.backend.user.dto.User;
-import com.ex.backend.user.mapper.UserMapper;
+import com.ex.backend.user.entity.User;
+import com.ex.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -14,14 +14,14 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.logging.Level;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
     private final Logger logger = Logger.getLogger(CustomOAuth2UserService.class.getName());
 
     @Override
@@ -33,18 +33,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2Response oAuth2Response;
 
         if (registrationId.equals("naver")) {
-
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
-        }
-        else if (registrationId.equals("google")) {
-
+        } else if (registrationId.equals("google")) {
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        }
-        else if (registrationId.equals("kakao")) {
-
+        } else if (registrationId.equals("kakao")) {
             oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
-        }
-        else {
+        } else {
             return null;
         }
 
@@ -58,33 +52,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     public User findByUsername(OAuth2Response oAuth2Response, String username) {
 
-        User userInfo = null;
+        Optional<User> userInfoOptional = userRepository.findByUsername(username);
+        User userInfo;
 
-        try {
-            userInfo = userMapper.findByUsername(username);
+        if (userInfoOptional.isEmpty()) {
+            User newUser = User.builder()
+                    .username(username)
+                    .email(oAuth2Response.getEmail())
+                    .nickname(oAuth2Response.getName()) // 초기 닉네임은 사용자의 이름으로 설정
+                    .name(oAuth2Response.getName())
+                    .role("ROLE_USER")
+                    .build();
 
-            if (userInfo == null) {
-
-                User newUser = User.builder()
-                        .username(username)
-                        .email(oAuth2Response.getEmail())
-                        .nickname(oAuth2Response.getName()) // 초기 닉네임은 사용자의 이름으로 설정
-                        .name(oAuth2Response.getName())
-                        .role("ROLE_USER")
-                        .build();
-
-                userMapper.oauthSave(newUser);
-
-                userInfo = userMapper.findByUsername(username);
-            } else {
-
-                userInfo.setEmail(oAuth2Response.getEmail());
-                userMapper.update(userInfo);
-            }
-        } catch (Exception e) {
-
-            logger.log(Level.SEVERE, "데이터베이스 작업 중 예외 발생 ", e);
+            userInfo = userRepository.save(newUser);
+        } else {
+            userInfo = userInfoOptional.get();
+            userInfo.setEmail(oAuth2Response.getEmail());
+            userRepository.save(userInfo);
         }
+
         return userInfo;
     }
 }

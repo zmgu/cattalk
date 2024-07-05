@@ -1,8 +1,7 @@
 package com.ex.backend.user.service;
 
-import com.ex.backend.chat.service.ChatRoomService;
-import com.ex.backend.user.dto.User;
-import com.ex.backend.user.mapper.UserMapper;
+import com.ex.backend.user.entity.User;
+import com.ex.backend.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +24,11 @@ public class UserService {
 
     private final Logger logger = Logger.getLogger(UserService.class.getName());
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
 
     public User findByUsername(String username) throws Exception {
-        return userMapper.findByUsername(username);
+        return userRepository.findByUsername(username).orElseThrow(() -> new Exception("User not found"));
     }
 
     public void login(User user, HttpServletRequest request) throws Exception {
@@ -40,16 +39,15 @@ public class UserService {
 
         // AuthenticationManager
         // 아이디, 패스워드 인증 토큰 생성
-        UsernamePasswordAuthenticationToken token
-                = new UsernamePasswordAuthenticationToken(username, password);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
 
         // 토큰에 요청정보 등록
-        token.setDetails( new WebAuthenticationDetails(request) );
+        token.setDetails(new WebAuthenticationDetails(request));
 
-        // 토큰을 이용하여 인증 요청 -로그인
+        // 토큰을 이용하여 인증 요청 - 로그인
         Authentication authentication = authenticationManager.authenticate(token);
 
-        log.info("인증 여부 : " +  authentication.isAuthenticated() );
+        log.info("인증 여부 : " +  authentication.isAuthenticated());
 
         User authUser = (User) authentication.getPrincipal();
         log.info("인증된 사용자 아이디 : " + authUser.getUsername());
@@ -64,19 +62,19 @@ public class UserService {
         String enPassword = passwordEncoder.encode(password);
         user.setPassword(enPassword);
         user.setRole("ROLE_USER");
-        // 회원 등록
-        int result = userMapper.insert(user);
 
-        return result;
+        // 회원 등록
+        userRepository.save(user);
+
+        return 1;
     }
 
-    public List<User> selectUserList(Long userId) {
+    public List<User> selectUserList(Long userId) throws Exception {
         try {
-            List<User> userList = userMapper.selectUserList(userId);
-            return userList;
+            return userRepository.findAllByIdNotIn(userId);
         } catch (Exception e) {
-            logger.severe("selectUserList 에러 : " + e.getStackTrace());
+            logger.severe("selectUserList 에러 : " + e.getMessage());
+            throw new Exception("Failed to fetch user list", e);
         }
-        return null;
     }
 }
