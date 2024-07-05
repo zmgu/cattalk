@@ -8,11 +8,17 @@ spring:
       port: 6379
 
   datasource:
-
-    # mysql
     url: jdbc:mysql://127.0.0.1:3306/zm?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
   security:
     oauth2:
@@ -57,12 +63,6 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
-
-mybatis:
-  mapper-locations: classpath:mapper/**/**.xml
-  configuration:
-    map-underscore-to-camel-case: true
-  type-aliases-package: com.ex.backend.user.dto,com.ex.backend.chat.domain
 
 com:
   ex:
