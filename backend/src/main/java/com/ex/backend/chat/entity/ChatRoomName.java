@@ -1,8 +1,6 @@
 package com.ex.backend.chat.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -15,6 +13,8 @@ import lombok.*;
 public class ChatRoomName {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long chatRoomNameId;
     private String roomId;
     private Long userId;
     private String roomName;
