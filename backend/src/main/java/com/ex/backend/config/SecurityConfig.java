@@ -40,8 +40,8 @@ public class SecurityConfig {
     private final RefreshTokenRedis refreshTokenRedis;
     private final CookieUtil cookieUtil;
 
-    public static final String[] PUBLIC_URLS  = { "/", "/**", "/login", "/oauth2", "/stomp/**" };
-    public static final String[] PRIVATE_URLS = { "/auth/reissue", "/oauth2", "/users/**", "/chat", "/chat/**" };
+    public static final String[] PUBLIC_URLS  = { "/", "/stomp/**" };
+    public static final String[] PRIVATE_URLS = { "/auth/reissue", "/users/**", "/chat/**" };
     public static final String[] ADMIN_URLS   = { "/admin/**" };
 
     @Bean
@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .httpBasic((basic) -> basic.disable())
         ;
 
+        // cors 설정
         http
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
 
@@ -71,13 +72,13 @@ public class SecurityConfig {
                     return configuration;
                 }));
 
-        // 필터 설정 ✅
+        // 커스텀 필터 설정
         http
                 .addFilterBefore(new JwtRequestFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtProvider, refreshTokenRedis, cookieUtil), LogoutFilter.class)
         ;
 
-        //oauth2
+        // oauth2 설정
         http
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
@@ -85,10 +86,9 @@ public class SecurityConfig {
                         .successHandler(oAuth2SuccessHandler)
                 );
 
-        // 인가 설정 ✅
+        // 인가 설정
         http.authorizeHttpRequests( authorizeRequests ->
                 authorizeRequests
-
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers(PRIVATE_URLS).hasAnyRole("USER", "ADMIN")
