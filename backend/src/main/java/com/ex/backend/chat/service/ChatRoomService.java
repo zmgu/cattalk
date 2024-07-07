@@ -3,9 +3,7 @@ package com.ex.backend.chat.service;
 import com.ex.backend.chat.dto.CreateChatRoomDto;
 import com.ex.backend.chat.entity.ChatRoom;
 import com.ex.backend.chat.entity.ChatRoomName;
-import com.ex.backend.chat.entity.ChatRoomParticipant;
 import com.ex.backend.chat.repository.ChatRoomNameRepository;
-import com.ex.backend.chat.repository.ChatRoomParticipantRepository;
 import com.ex.backend.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +19,8 @@ public class ChatRoomService {
 
     private final Logger logger = Logger.getLogger(ChatRoomService.class.getName());
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final ChatRoomNameRepository chatRoomNameRepository;
+
 
     public String createChatRoom(CreateChatRoomDto createChatRoomDto) {
         String roomId = UUID.randomUUID().toString();
@@ -51,26 +49,11 @@ public class ChatRoomService {
 
         try {
             chatRoomNameRepository.save(myChatRoomName);
+
+            logger.info("================= 처음 save 완료 ==============");
             chatRoomNameRepository.save(friendChatRoomName);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "createChatRoomName 쿼리 에러", e);
-        }
-
-        try {
-            ChatRoomParticipant myParticipant = ChatRoomParticipant.builder()
-                    .roomId(roomId)
-                    .participantId(createChatRoomDto.getMyUserId())
-                    .build();
-
-            ChatRoomParticipant friendParticipant = ChatRoomParticipant.builder()
-                    .roomId(roomId)
-                    .participantId(createChatRoomDto.getFriendUserId())
-                    .build();
-
-            chatRoomParticipantRepository.save(myParticipant);
-            chatRoomParticipantRepository.save(friendParticipant);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "insertChatRoomParticipant 쿼리 에러", e);
         }
 
         return roomId;
@@ -79,7 +62,7 @@ public class ChatRoomService {
     public String findChatRoom(Long myUserId, Long friendUserId) {
         String roomId = null;
         try {
-            roomId = chatRoomParticipantRepository.findChatRoomIdByUserIds(myUserId, friendUserId);
+            roomId = chatRoomRepository.findChatRoomIdByUserIds(myUserId, friendUserId);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "findChatRoom 쿼리 에러", e);
         }
@@ -99,7 +82,7 @@ public class ChatRoomService {
     public String findChatRoomName(String roomId, Long userId) {
         String chatRoomName = null;
         try {
-            chatRoomName = chatRoomNameRepository.findRoomNameByRoomIdAndUserId(roomId, userId);
+            chatRoomName = chatRoomRepository.findRoomNameByRoomIdAndUserId(roomId, userId);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "findChatRoomName 쿼리 에러", e);
         }
