@@ -4,7 +4,7 @@ package com.ex.backend.security.oauth2.handler;
 import com.ex.backend.redis.RefreshTokenRedis;
 import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.jwt.cookie.CookieUtil;
-import com.ex.backend.security.jwt.dto.RefreshToken;
+import com.ex.backend.security.jwt.entity.RefreshToken;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import com.ex.backend.user.dto.PrincipalDetails;
 import jakarta.servlet.ServletException;

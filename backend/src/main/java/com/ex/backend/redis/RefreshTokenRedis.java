@@ -1,6 +1,6 @@
 package com.ex.backend.redis;
 
-import com.ex.backend.security.jwt.dto.RefreshToken;
+import com.ex.backend.security.jwt.entity.RefreshToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
