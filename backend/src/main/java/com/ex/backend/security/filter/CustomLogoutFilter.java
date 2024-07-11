@@ -1,8 +1,8 @@
-package com.ex.backend.security.jwt.filter;
+package com.ex.backend.security.filter;
 
 import com.ex.backend.redis.RefreshTokenRedis;
 import com.ex.backend.security.jwt.constants.JwtConstants;
-import com.ex.backend.security.jwt.cookie.CookieUtil;
+import com.ex.backend.security.cookie.CookieUtil;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

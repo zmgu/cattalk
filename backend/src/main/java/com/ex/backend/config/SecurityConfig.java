@@ -2,9 +2,9 @@ package com.ex.backend.config;
 
 import com.ex.backend.redis.RefreshTokenRedis;
 import com.ex.backend.security.jwt.constants.JwtConstants;
-import com.ex.backend.security.jwt.cookie.CookieUtil;
-import com.ex.backend.security.jwt.filter.CustomLogoutFilter;
-import com.ex.backend.security.jwt.filter.JwtRequestFilter;
+import com.ex.backend.security.cookie.CookieUtil;
+import com.ex.backend.security.filter.CustomLogoutFilter;
+import com.ex.backend.security.filter.JwtRequestFilter;
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import com.ex.backend.security.oauth2.handler.OAuth2SuccessHandler;
 import com.ex.backend.user.service.CustomOAuth2UserService;

@@ -1,4 +1,4 @@
-package com.ex.backend.security.jwt.cookie;
+package com.ex.backend.security.cookie;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

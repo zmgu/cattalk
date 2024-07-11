@@ -1,4 +1,4 @@
-package com.ex.backend.security.jwt.filter;
+package com.ex.backend.security.filter;
 
 import com.ex.backend.security.jwt.provider.JwtProvider;
 import com.ex.backend.user.dto.PrincipalDetails;
