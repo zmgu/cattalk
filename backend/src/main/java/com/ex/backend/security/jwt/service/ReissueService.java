@@ -1,6 +1,5 @@
 package com.ex.backend.security.jwt.service;
 
-import com.ex.backend.redis.RefreshTokenRedis;
 import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.cookie.CookieUtil;
 import com.ex.backend.security.jwt.entity.RefreshToken;

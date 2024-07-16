@@ -1,6 +1,6 @@
 package com.ex.backend.security.filter;
 
-import com.ex.backend.redis.RefreshTokenRedis;
+import com.ex.backend.security.jwt.service.RefreshTokenRedis;
 import com.ex.backend.security.jwt.constants.JwtConstants;
 import com.ex.backend.security.cookie.CookieUtil;
 import com.ex.backend.security.jwt.provider.JwtProvider;

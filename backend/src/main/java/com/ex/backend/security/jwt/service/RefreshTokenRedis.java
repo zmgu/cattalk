@@ -1,4 +1,4 @@
-package com.ex.backend.redis;
+package com.ex.backend.security.jwt.service;
 
 import com.ex.backend.security.jwt.entity.RefreshToken;
 import lombok.RequiredArgsConstructor;
