@@ -2,11 +2,11 @@ package com.ex.backend.chat.controller;
 
 import com.ex.backend.chat.entity.ChatMessage;
 import com.ex.backend.chat.service.ChatService;
+import com.ex.backend.kafka.service.KafkaProducerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final KafkaProducerService kafkaProducerService;
 
     @GetMapping("/chat/rooms/{roomId}/messages")
     public ResponseEntity<List<ChatMessage>> getChatMessages(@PathVariable String roomId) {
@@ -26,10 +26,8 @@ public class ChatController {
 
     @MessageMapping("/send")
     public void sendMessage(@Payload ChatMessage chatMessage) {
-
+        kafkaProducerService.sendMessage(chatMessage);
         chatService.saveMessage(chatMessage);
-        String destination = "/stomp/sub/chat/" + chatMessage.getRoomId();
-        messagingTemplate.convertAndSend(destination, chatMessage);
     }
 
 }
