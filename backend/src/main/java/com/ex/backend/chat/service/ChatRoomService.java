@@ -5,6 +5,7 @@ import com.ex.backend.chat.entity.ChatRoom;
 import com.ex.backend.chat.entity.ChatRoomName;
 import com.ex.backend.chat.repository.ChatRoomNameRepository;
 import com.ex.backend.chat.repository.ChatRoomRepository;
+import com.ex.backend.kafka.service.KafkaAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,12 @@ public class ChatRoomService {
     private final Logger logger = Logger.getLogger(ChatRoomService.class.getName());
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomNameRepository chatRoomNameRepository;
-
+    private final KafkaAdminService kafkaAdminService;
 
     public String createChatRoom(CreateChatRoomDto createChatRoomDto) {
         String roomId = UUID.randomUUID().toString();
-
+        kafkaAdminService.createChatRoomTopic(roomId);
+        
         try {
             ChatRoom chatRoom = ChatRoom.builder()
                     .roomId(roomId)
@@ -56,6 +58,7 @@ public class ChatRoomService {
             logger.log(Level.SEVERE, "createChatRoomName 쿼리 에러", e);
         }
 
+        kafkaAdminService.createChatRoomTopic(roomId);
         return roomId;
     }
 
