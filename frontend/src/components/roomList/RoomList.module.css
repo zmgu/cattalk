@@ -13,7 +13,13 @@
 }
 
 .container:hover {
+    background-color: rgb(245, 241, 228);
     cursor: pointer;
+    transition: 0.2s;
+}
+
+.container:not(:hover) {
+    transition: 0.2s;
 }
 
 .image-box {
@@ -27,7 +33,17 @@
     border-radius: 45%;
 }
 
-.name {
+.name-message {
     margin-left: 5px;
-    font-size: 12px;
+
+}
+
+.name {
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.message {
+    font-size: 11px;
+    color: gray;
 }

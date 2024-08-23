@@ -43,7 +43,11 @@ const RoomList = () => {
                 <div className={roomList['image-box']}>
                     <img src={profile_null} alt='' className={roomList['image']}/>
                 </div>
-                <div className={roomList['name']}>{room.roomName}</div>
+                <div className={roomList['name-message']}>
+                    <div className={roomList['name']}>{room.roomName}</div>
+                    <div className={roomList['message']}>최신 메시지 자리</div>
+                </div>
+                
             </div>
         ))}
     </div>
