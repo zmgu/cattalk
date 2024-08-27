@@ -1,5 +1,6 @@
 package com.ex.backend.chat.service;
 
+import com.ex.backend.chat.dto.ChatRoomListDto;
 import com.ex.backend.chat.dto.CreateChatRoomDto;
 import com.ex.backend.chat.entity.ChatRoom;
 import com.ex.backend.chat.entity.ChatRoomName;
@@ -72,10 +73,10 @@ public class ChatRoomService {
         return roomId;
     }
 
-    public List<ChatRoomName> findChatRoomList(Long userId) {
-        List<ChatRoomName> chatRoomList = null;
+    public List<ChatRoomListDto> findChatRoomList(Long userId) {
+        List<ChatRoomListDto> chatRoomList = null;
         try {
-            chatRoomList = chatRoomNameRepository.findByUserId(userId);
+            chatRoomList = chatRoomRepository.findChatRoomListByUserId(userId);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "findChatRoomList 쿼리 에러", e);
         }

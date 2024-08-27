@@ -1,7 +1,7 @@
 package com.ex.backend.chat.controller;
 
+import com.ex.backend.chat.dto.ChatRoomListDto;
 import com.ex.backend.chat.dto.CreateChatRoomDto;
-import com.ex.backend.chat.entity.ChatRoomName;
 import com.ex.backend.chat.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class ChatRoomController {
     }
 
     @GetMapping
-    public List<ChatRoomName> findChatRoomList(@RequestParam Long userId) {
+    public List<ChatRoomListDto> findChatRoomList(@RequestParam Long userId) {
 
         return chatRoomService.findChatRoomList(userId);
     }
