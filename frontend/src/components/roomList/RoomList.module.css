@@ -1,6 +1,6 @@
 .list-container {
-    max-height: 400px; /* 최대 높이 설정 */
-    overflow-y: auto; /* 내용이 넘칠 경우 세로 스크롤바 생성 */
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .container {
@@ -8,7 +8,7 @@
     height: 60px;
     background-color: transparent;
     display: flex;
-    justify-content:left;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -25,6 +25,8 @@
 .image-box {
     padding-left: 12px;
     padding-right: 12px;
+    display: flex;
+    align-items: center;
 }
 
 .image {
@@ -35,15 +37,79 @@
 
 .name-message {
     margin-left: 5px;
-
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    flex-grow: 1;
+    overflow: hidden;
 }
 
 .name {
     margin-bottom: 4px;
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: bold;
+    color: rgb(55, 55, 55);
 }
 
 .message {
-    font-size: 11px;
+    font-size: 10px;
     color: gray;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sendtime-unread {
+    margin-left: 10px;
+
+}
+
+.sendtime {
+    font-size: 8px;
+    color: gray;
+    margin-right: 12px;
+    margin-bottom: 5px;
+    white-space: nowrap; 
+}
+
+.unread {
+    display: flex;
+    justify-content: right;
+    font-size: 10px;
+    margin-right: 19px;
+}
+
+.red-box {
+    background-color: red;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    height: 14px;
+    display: inline-block;
+    line-height: 14px; 
+    position: relative;
+    white-space: nowrap;
+    z-index: 999;
+    visibility: hidden;
+}
+
+.red-box::before, .red-box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 14px;
+    height: 14px;
+    background-color: red;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.red-box::before {
+    left: -7px;
+}
+
+.red-box::after {
+    right: -7px;
 }
