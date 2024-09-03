@@ -26,49 +26,36 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
         // 헤더에서 accessToken 추출
         String accessToken = request.getHeader("authorization");
         String requestURI = request.getRequestURI();
         logger.info(" requestURI: " + requestURI);
 
-        if(requestURI.startsWith("/stomp/ws")) {
-            logger.info(" stomp 경로로 요청 옴 ");
-            filterChain.doFilter(request, response);
-            return;
-
-        } else if (accessToken == null && requestURI.equals("/auth/reissue")) {
-            // 엑세스 토큰이 없고, 재발급 경로 요청이었을 경우 다음 필터로 이동
+        if(requestURI.startsWith("/stomp/ws") || (accessToken == null && requestURI.equals("/auth/reissue"))) {
             filterChain.doFilter(request, response);
             return;
 
         } else if(accessToken == null && !requestURI.equals("/auth/reissue")) {
-            // 엑세스 토큰이 없고, 재발급 경로 요청이 아니었을 경우 상태 코드 401
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            logger.info("else if(accessToken == null && !requestURI.equals(\"/auth/reissue\"))");
+            logger.info("엑세스 토큰이 없고, 재발급 경로 요청이 아님");
             return;
         }
-
-        // 엑세스 토큰 접두사 제거
-        accessToken = accessToken.substring(7).trim();
 
         // 토큰 만료 여부 확인
         try {
             jwtProvider.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-            logger.info("jwtProvider.isExpired(accessToken): accessToken 만료됨");
+            logger.info("AccessToken 만료됨");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        // username, role 값을 획득
-        Long userId = jwtProvider.getUserId(accessToken);
-        String nickname = jwtProvider.getNickname(accessToken);
-        String role = jwtProvider.getRole(accessToken);
-
+        // 토큰에서 유저정보 추출
         User user = User.builder()
-                .userId(userId)
-                .nickname(nickname)
-                .role(role)
+                .userId(jwtProvider.getUserId(accessToken))
+                .nickname(jwtProvider.getNickname(accessToken))
+                .role(jwtProvider.getRole(accessToken))
                 .build();
 
         PrincipalDetails customUserDetails = new PrincipalDetails(user);
