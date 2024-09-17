@@ -13,19 +13,19 @@ import java.util.List;
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
 
     @Query( "SELECT crn.roomId " +
-            "FROM ChatRoomName crn " +
-            "JOIN ChatRoomName crn2 ON crn.roomId = crn2.roomId " +
+            "FROM ChatRoomParticipant crn " +
+            "JOIN ChatRoomParticipant crn2 ON crn.roomId = crn2.roomId " +
             "WHERE crn.userId = :myUserId AND crn2.userId = :friendUserId" )
     String findChatRoomIdByUserIds(@Param("myUserId") Long myUserId, @Param("friendUserId") Long friendUserId);
 
     @Query( "SELECT crn.roomName " +
-            "FROM ChatRoomName crn " +
+            "FROM ChatRoomParticipant crn " +
             "WHERE crn.roomId = :roomId AND crn.userId = :userId" )
     String findRoomNameByRoomIdAndUserId(@Param("roomId") String roomId, @Param("userId") Long userId);
 
 
     @Query("SELECT new com.ex.backend.chat.dto.ChatRoomListDto(crn.roomId, crn.roomName, cm.content, cm.sendTime) " +
-            "FROM ChatRoomName crn " +
+            "FROM ChatRoomParticipant crn " +
             "JOIN ChatMessage cm ON crn.roomId = cm.roomId " +
             "WHERE crn.userId = :userId AND cm.sendTime = (" +
             "SELECT MAX(cm2.sendTime) " +
