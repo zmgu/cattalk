@@ -79,5 +79,5 @@ com:
   ex:
     backend:
       secret-key: ${JWT_SECRET_KEY}
-      access-expiredtime: 120000
-      refresh-expiredtime: 3600000
+      access-expiredtime: 3600000
+      refresh-expiredtime: 86400000
