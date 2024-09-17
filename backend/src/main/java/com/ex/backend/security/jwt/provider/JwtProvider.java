@@ -65,6 +65,6 @@ public class JwtProvider {
     }
 
     public String removePrefix(String token) {
-        return token.substring(7).trim();
+        return token.startsWith(JwtConstants.TOKEN_PREFIX) ? token.substring(7).trim() : token;
     }
 }
