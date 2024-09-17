@@ -1,5 +1,6 @@
 package com.ex.backend.chat.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -17,7 +18,6 @@ public class ChatRoom {
 
     @Id
     private String roomId;
-    private Date createdDate;
-    private Date lastMessageTime;
+    private Date createDate;
 
 }
