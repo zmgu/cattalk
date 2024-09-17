@@ -4,7 +4,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperclip, faPaperPlane, faArrowLeft, faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
 import { LoginContext } from '../../contexts/LoginContextProvider';
-import { getMessages } from '../../apis/chat';
+import { getMessages, getLastReadTimes } from '../../apis/chat';
 import { connectWebSocket, disconnectWebSocket, sendMessage } from './WebSocket';
 
 const Chat = () => {
@@ -12,6 +12,7 @@ const Chat = () => {
     const [roomDetails, setRoomDetails] = useState(location.state || {});
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [lastReadTimes, setLastReadTimes] = useState([]);
     const chatContainerRef = useRef(null);
     const chatInputRef = useRef(null);
     const chatMessageRef = useRef(null);
@@ -31,34 +32,79 @@ const Chat = () => {
     useEffect(() => {
         adjustChatMessageHeight();
         window.addEventListener('resize', adjustChatMessageHeight);
-
+    
         const token = localStorage.getItem('Authorization');
         
         const getAllMessage = async () => {
             try {
                 const response = await getMessages(roomDetails.roomId);
                 setMessages(response.data);
-
             } catch (error) {
                 console.error("메시지를 불러오는데 실패했습니다.", error);
             }
         };
+        
+        const getLastReadTimeApi = async () => {
+            try {
+                const response = await getLastReadTimes(userInfo.userId, roomDetails.roomId);
+                setLastReadTimes(response.data);
+            } catch (error) {
+                console.error("최신 메시지 읽은 시간을 불러오는데 실패했습니다.", error);
+            }
+        }
+        const updateLastReadTime = (newLastReadTimes) => {
+        
+            setLastReadTimes((prevLastReadTimes) => {
+                const updatedTimes = { ...prevLastReadTimes };
+        
+                if (Array.isArray(newLastReadTimes)) {
+                    // newLastReadTimes가 배열일 경우 처리
+                    newLastReadTimes.forEach((entry) => {
+                        Object.entries(entry).forEach(([userId, newReadTime]) => {
+                            updatedTimes[userId] = newReadTime;
+                        });
+                    });
+                } else {
+                    // newLastReadTimes가 객체일 경우 처리
+                    Object.entries(newLastReadTimes).forEach(([userId, newReadTime]) => {
+                        updatedTimes[userId] = newReadTime;
+                    });
+                }
+        
+                return updatedTimes;
+            });
+        };        
+        
 
+        getLastReadTimeApi();
         getAllMessage();
         scrollToBottom();
 
         connectWebSocket(
             roomDetails.roomId,
             token,
-            (receivedMessage) => setMessages(prevMessages => [...prevMessages, receivedMessage]),
-            (error) => console.error('WebSocket error:', error)
-        );
-
+            (chatMessageResponseDto) => {
+                const { chatMessage, lastReadTimes: newLastReadTimes } = chatMessageResponseDto;
+                setMessages((prevMessages) => [...prevMessages, chatMessage]);
+                updateLastReadTime(newLastReadTimes);
+            },
+            (error) => console.error('WebSocket error:', error),
+            (lastReadTimeUpdate) => {
+                updateLastReadTime([lastReadTimeUpdate]);  // 브로드캐스트된 lastReadTime 업데이트
+            }
+        );        
+        
+    
         return () => {
             window.removeEventListener('resize', adjustChatMessageHeight);
             disconnectWebSocket();
         };
     }, [roomDetails.roomId]);
+    
+    useEffect(() => {
+        console.log('Updated lastReadTimes: ',JSON.stringify(lastReadTimes));
+    }, [lastReadTimes]);
+
 
     const handleMessageChange = (event) => {
         const textarea = event.target;
@@ -138,6 +184,8 @@ const Chat = () => {
         return `${ampm} ${formattedHours}:${formattedMinutes}`;
     };
     
+
+    
     return (
         <div className='chat-container' ref={chatContainerRef}>
 
@@ -168,6 +216,12 @@ const Chat = () => {
                         index === 0 ||
                         messages[index - 1]?.senderUserId !== msg.senderUserId ||
                         new Date(messages[index - 1]?.sendTime).getMinutes() !== new Date(msg.sendTime).getMinutes();
+                    
+                        const unreadCount = Object.entries(lastReadTimes)
+                        .filter(([userId, lastReadTime]) => {
+                            return new Date(lastReadTime) < new Date(msg.sendTime);  // 메시지 보낸 시간과 비교
+                        }).length;
+                                    
 
                     return (
                         <div key={index}>
@@ -180,11 +234,15 @@ const Chat = () => {
                                 {isMyMessage ? (
                                     <>
                                         <div className="chat-space"></div>
-                                        {showTime && (
-                                            <div className={`message-time my-time`}>
-                                                {formatTime(msg.sendTime)}
-                                            </div>
-                                        )}
+                                        <div className="my-time-unread">
+                                            {unreadCount > 0 && <div className="my-message-unread">{unreadCount}</div>}
+                                            {showTime && (
+                                                <div className={`message-time my-message-time`}>
+                                                    {formatTime(msg.sendTime)}
+                                                </div>
+                                            )}
+                                        </div>
+                                        
                                         <div className="message my-chat">
                                             <div className='message-content'>
                                                 {msg.content}
@@ -198,11 +256,15 @@ const Chat = () => {
                                                 {msg.content}
                                             </div>
                                         </div>
-                                        {showTime && (
-                                            <div className={`message-time another-time`}>
-                                                {formatTime(msg.sendTime)}
-                                            </div>
-                                        )}
+                                        <div className='another-time-unread'>
+                                            {unreadCount > 0 && <div className="my-message-unread">{unreadCount}</div>}
+                                            {showTime && (
+                                                <div className={`message-time another-message-time`}>
+                                                    {formatTime(msg.sendTime)}
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <div className="chat-space"></div>
                                     </>
                                 )}
