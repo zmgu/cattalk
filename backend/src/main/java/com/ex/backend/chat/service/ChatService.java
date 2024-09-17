@@ -6,14 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
     private final ChatMessageRepository chatMessageRepository;
-    private final Logger logger = Logger.getLogger(ChatService.class.getName());
 
     public void saveMessage(ChatMessage chatMessage) {
         chatMessageRepository.save(chatMessage);
