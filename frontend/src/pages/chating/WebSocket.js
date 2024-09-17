@@ -3,20 +3,27 @@ import { Client } from '@stomp/stompjs';
 
 let stompClient = null;
 
-export const connectWebSocket = (roomId, token, onMessageReceived, onError) => {
+export const connectWebSocket = (roomId, token, onMessageReceived, onError, onLastReadTimeUpdate) => {
     const socket = new SockJS(`http://localhost:8888/stomp/ws`);
 
     stompClient = new Client({
         webSocketFactory: () => socket,
         connectHeaders: {
-            Authorization: token
+            'Authorization': token,
+            'roomId' : roomId
         },
         onConnect: () => {
-            console.log('Connected');
             stompClient.subscribe(`/stomp/sub/chat/${roomId}`, (message) => {
                 if (message.body) {
                     const receivedMessage = JSON.parse(message.body);
                     onMessageReceived(receivedMessage);
+                }
+            });
+
+            stompClient.subscribe(`/stomp/sub/chat/${roomId}/lastReadTime`, (message) => {
+                if (message.body) {
+                    const lastReadTimeUpdate = JSON.parse(message.body);
+                    onLastReadTimeUpdate(lastReadTimeUpdate);
                 }
             });
         },
