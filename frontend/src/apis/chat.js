@@ -47,3 +47,12 @@ export const getMessages = (roomId) =>
             roomId: roomId
         }
     });
+
+// 최신 메시지 읽은 시간 불러오기
+export const getLastReadTimes = (userId, roomId) =>
+    privateApi.get(`/chat/rooms/${roomId}/times`, {
+        params: {
+            userId: userId,
+            roomId: roomId
+        }
+    });
