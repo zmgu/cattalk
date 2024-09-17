@@ -33,9 +33,6 @@ public class ChatMessage {
     @Column(name = "send_time")
     private Date sendTime;
 
-    @Column(name = "read_by")
-    private String readBy;
-
     @Column(name = "type")
     private String type;
 
