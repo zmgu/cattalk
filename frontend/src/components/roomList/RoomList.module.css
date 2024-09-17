@@ -1,6 +1,7 @@
 .list-container {
     max-height: 400px;
     overflow-y: auto;
+    font-family: "Jua", sans-serif;
 }
 
 .container {
@@ -77,7 +78,7 @@
     display: flex;
     justify-content: right;
     font-size: 10px;
-    margin-right: 19px;
+    margin-right: 18px;
 }
 
 .red-box {
@@ -92,7 +93,7 @@
     position: relative;
     white-space: nowrap;
     z-index: 999;
-    visibility: hidden;
+    /* visibility: hidden; */
 }
 
 .red-box::before, .red-box::after {
@@ -107,9 +108,9 @@
 }
 
 .red-box::before {
-    left: -7px;
+    left: -6px;
 }
 
 .red-box::after {
-    right: -7px;
+    right: -6px;
 }
