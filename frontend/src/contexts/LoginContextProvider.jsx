@@ -28,7 +28,6 @@ const LoginContextProvider = ({ children }) => {
 
     // ✅ 로그인 체크
     const loginCheck = async () => {
-        console.log('loginCheck 실행 중');
 
         let response
         let userData
@@ -79,10 +78,6 @@ const LoginContextProvider = ({ children }) => {
     const loginSetting = (userData) => {
         const { userId, nickname, role } = userData
 
-        console.log(`userId : ${userId}`);
-        console.log(`nickname : ${nickname}`);
-        console.log(`role : ${role}`);
-
         // 👩‍💼🔐 로그인 여부 : true
         setLogin(true)
         
@@ -104,7 +99,6 @@ const LoginContextProvider = ({ children }) => {
         }        
 
         if (window.confirm("로그아웃하시겠습니까?")) {
-            console.log('로그아웃 진행 중');
             // 로그아웃 세팅
             logoutSetting();
         
@@ -116,7 +110,6 @@ const LoginContextProvider = ({ children }) => {
 
     // 로그아웃 세팅
     const logoutSetting = async () => {
-        console.log(' logoutSetting 동작중');
         localStorage.removeItem('Authorization'); // 엑세스 토큰 제거
         await auth.logout();                      // 쿠키에 있는 리프래시 토큰 제거
         setLogin(false)                           // 로그인 여부 : false

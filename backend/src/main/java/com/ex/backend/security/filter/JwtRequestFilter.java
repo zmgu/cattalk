@@ -51,7 +51,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 토큰에서 유저정보 추출
+        // username, role 값을 획득
         User user = User.builder()
                 .userId(jwtProvider.getUserId(accessToken))
                 .nickname(jwtProvider.getNickname(accessToken))

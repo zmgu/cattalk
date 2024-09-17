@@ -13,7 +13,6 @@ const OAuth2RedirectHandler = () => {
 
     const refreshTokenAndRedirect = async () => {
         try {
-            console.log('OAuth2RedirectHandler 시작')
             const response = await publicApi.post('/auth/reissue', {}, { withCredentials: true });
 
             const accessToken = response.headers['authorization'];        

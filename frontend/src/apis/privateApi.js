@@ -8,10 +8,8 @@ const privateApi = axios.create({
 // 헤더에 엑세스 토큰을 추가한 뒤 api 요청
 privateApi.interceptors.request.use(config => {
     const accessToken = localStorage.getItem('Authorization');
-    console.log(`privateApi 시작`);
     
     if (accessToken) {
-        console.log(`accessToken 헤더에 담아 요청 시도`);
         config.headers['Authorization'] = accessToken;
     }
     return config;
@@ -21,7 +19,6 @@ privateApi.interceptors.request.use(config => {
 
 // api 요청 시 마다 엑세스 토큰이 만료되었을 경우 리프래시 토큰으로 재발급 요청
 privateApi.interceptors.response.use(response => {
-    console.log('privateApi 정상 처리 완료');
 
     return response;
 
@@ -30,7 +27,6 @@ privateApi.interceptors.response.use(response => {
     const originalRequest = error.config;
 
     if (error.response.status === 401 && !originalRequest._retry) {
-        console.log('privateApi 예외처리 시작');
 
         originalRequest._retry = true;
 
@@ -39,8 +35,7 @@ privateApi.interceptors.response.use(response => {
         localStorage.removeItem('Authorization');
         const response = await publicApi.post('/auth/reissue', {}, { withCredentials: true });
         const accessToken = response.headers['authorization'];
-        console.log(`privateApi 통해 발급한 accessToken : ${accessToken}`);
-        
+
         localStorage.setItem('Authorization', accessToken);
 
         // 재발급 받은 엑세스 토큰으로 원래 요청 재시도
