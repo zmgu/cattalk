@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/chat/rooms")
@@ -43,4 +45,9 @@ public class ChatRoomController {
         return ResponseEntity.ok(chatRoomName);
     }
 
+    // RDB 에서 가져오는 최근 메시지 읽은 시간 리스트
+    @GetMapping("/{roomId}/times")
+    public Map<Long, Date> getLastReadTimes(@RequestParam Long userId, @PathVariable String roomId) {
+        return chatRoomService.getLastReadTimes(userId, roomId);
+    }
 }
