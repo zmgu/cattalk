@@ -3,15 +3,17 @@ package com.ex.backend.chat.service;
 import com.ex.backend.chat.dto.ChatRoomListDto;
 import com.ex.backend.chat.dto.CreateChatRoomDto;
 import com.ex.backend.chat.entity.ChatRoom;
-import com.ex.backend.chat.entity.ChatRoomName;
-import com.ex.backend.chat.repository.ChatRoomNameRepository;
+import com.ex.backend.chat.entity.ChatRoomParticipant;
+import com.ex.backend.chat.repository.ChatRoomParticipantRepository;
 import com.ex.backend.chat.repository.ChatRoomRepository;
 import com.ex.backend.kafka.service.KafkaAdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,16 +23,22 @@ public class ChatRoomService {
 
     private final Logger logger = Logger.getLogger(ChatRoomService.class.getName());
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatRoomNameRepository chatRoomNameRepository;
+    private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final KafkaAdminService kafkaAdminService;
+    private final ChatRedis chatRedis;
+    private final SimpMessagingTemplate messagingTemplate;
+
 
     public String createChatRoom(CreateChatRoomDto createChatRoomDto) {
         String roomId = UUID.randomUUID().toString();
         kafkaAdminService.createChatRoomTopic(roomId);
-        
+
+        Date now = new Date();
+
         try {
             ChatRoom chatRoom = ChatRoom.builder()
                     .roomId(roomId)
+                    .createDate(now)
                     .build();
 
             chatRoomRepository.save(chatRoom);
@@ -38,25 +46,29 @@ public class ChatRoomService {
             logger.log(Level.SEVERE, "createChatRoom 쿼리 에러", e);
         }
 
-        ChatRoomName myChatRoomName = ChatRoomName.builder()
+
+
+        ChatRoomParticipant chatRoomParticipant = ChatRoomParticipant.builder()
                 .roomId(roomId)
                 .userId(createChatRoomDto.getMyUserId())
                 .roomName(createChatRoomDto.getFriendNickname())
+                .lastMessageReadAt(now)
+                .JoinedAt(now)
                 .build();
 
-        ChatRoomName friendChatRoomName = ChatRoomName.builder()
+        ChatRoomParticipant friendChatRoomParticipant = ChatRoomParticipant.builder()
                 .roomId(roomId)
                 .userId(createChatRoomDto.getFriendUserId())
                 .roomName(createChatRoomDto.getMyNickname())
+                .lastMessageReadAt(now)
+                .JoinedAt(now)
                 .build();
 
         try {
-            chatRoomNameRepository.save(myChatRoomName);
-
-            logger.info("================= 처음 save 완료 ==============");
-            chatRoomNameRepository.save(friendChatRoomName);
+            chatRoomParticipantRepository.save(chatRoomParticipant);
+            chatRoomParticipantRepository.save(friendChatRoomParticipant);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "createChatRoomName 쿼리 에러", e);
+            logger.log(Level.SEVERE, "createChatRoomParticipant 쿼리 에러", e);
         }
 
         kafkaAdminService.createChatRoomTopic(roomId);
@@ -91,5 +103,80 @@ public class ChatRoomService {
             logger.log(Level.SEVERE, "findChatRoomName 쿼리 에러", e);
         }
         return chatRoomName;
+    }
+
+    public Map<Long, Date> getLastReadTimes(Long userId, String roomId) {
+
+        Map<Long, Date> lastReadTimes = new HashMap<>();
+
+        try {
+            String exist = chatRedis.getUserChatInfo(userId, roomId, "lastMessageReadAt");
+            logger.info("exist: " + exist);
+
+            // 레디스에 데이터가 있을 경우 본인 데이터만 갱신 후 종료
+            if (exist != null) {
+                Date currentTime = new Date();
+
+                updateLastReadTimeRedis(userId, roomId, currentTime);
+
+                lastReadTimes.put(userId, currentTime);
+
+                return lastReadTimes;
+            }
+
+            // 레디스에 데이터가 없을 경우 진행
+            List<ChatRoomParticipant> participants = chatRoomParticipantRepository.findChatRoomParticipantByRoomId(roomId);
+
+            for (ChatRoomParticipant participant : participants) {
+                Long participantId = participant.getUserId();
+
+                Date lastMessageReadAt =
+                        participantId.equals(userId) ? new Date() : participant.getLastMessageReadAt();
+
+                // 레디스에 최근 읽은 시간 저장
+                updateLastReadTimeRedis(participantId, roomId, lastMessageReadAt);
+
+                lastReadTimes.put(participantId, lastMessageReadAt);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "findChatRoomParticipantByRoomId 쿼리 에러", e);
+        }
+
+        return lastReadTimes;
+    }
+
+    // 레디스에서 가져온 읽은 시간으로 RDB 저장 후 삭제
+    public void deleteChatRoomRedis(String roomId) {
+        List<ChatRoomParticipant> participants = chatRoomParticipantRepository.findChatRoomParticipantByRoomId(roomId);
+
+        for (ChatRoomParticipant participant : participants) {
+            Long userId = participant.getUserId();
+
+                String lastMessageReadAtString = chatRedis.getUserChatInfo(userId, roomId, "lastMessageReadAt");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                Date lastMessageReadAt = null;
+                try {
+                    lastMessageReadAt = dateFormat.parse(lastMessageReadAtString);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            chatRoomParticipantRepository.updateLastMessageReadAt(userId, roomId, lastMessageReadAt);
+            chatRedis.deleteUserChatInfo(userId, roomId);
+        }
+    }
+
+    public void updateLastReadTimeRedis(Long userId, String roomId, Date lastMessageReadAt) {
+        chatRedis.deleteUserChatInfo(userId, roomId);
+        chatRedis.saveUserChatInfo(userId, roomId, lastMessageReadAt);
+    }
+
+    public void broadcastLastReadTime(String roomId, Long userId) {
+        Map<Long, Date> lastReadTimes = new HashMap<>();
+        lastReadTimes.put(userId, new Date());
+
+        messagingTemplate.convertAndSend("/stomp/sub/chat/" + roomId + "/lastReadTime", lastReadTimes);
+
     }
 }
