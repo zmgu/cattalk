@@ -33,7 +33,11 @@ public class WebSocketEventListener {
 
         Long userId = jwtProvider.getUserId(accessToken.get(0));
         String roomId = roomIdHeader.get(0);
-        logger.info("이벤트 리스너 시작 userId : " + userId);
+        String sessionId = headerAccessor.getSessionId();
+
+        webSocketSessionManager.addUserSession(roomId, userId, sessionId);
+        logger.info("채팅방 : " + roomId + ", 접속 유저 목록 : " + webSocketSessionManager.getRoomAllUserByRoomId(roomId));
+
         chatRoomService.broadcastLastReadTime(roomId, userId);
     }
 
@@ -50,11 +54,10 @@ public class WebSocketEventListener {
         chatRoomService.updateLastReadTimeRedis(userId, roomId, new Date());
         webSocketSessionManager.removeUserSession(sessionId);
 
+        logger.info("채팅방 : " + roomId + ", 접속 유저 목록 : " + webSocketSessionManager.getRoomAllUserByRoomId(roomId));
         if(webSocketSessionManager.getRoomAllUserByRoomId(roomId).size() < 1) {
             logger.info("채팅방 웹소켓 연결된 유저가 없음 -> 채팅방 redis 전체 삭제");
             chatRoomService.deleteChatRoomRedis(roomId);
         }
-        logger.info("채팅방 : " + roomId + " 접속 유저 목록 : " + webSocketSessionManager.getRoomAllUserByRoomId(roomId));
-
     }
 }
