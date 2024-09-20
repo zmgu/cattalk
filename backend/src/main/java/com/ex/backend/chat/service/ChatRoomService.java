@@ -8,7 +8,6 @@ import com.ex.backend.chat.repository.ChatRoomParticipantRepository;
 import com.ex.backend.chat.repository.ChatRoomRepository;
 import com.ex.backend.kafka.service.KafkaAdminService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -26,8 +25,6 @@ public class ChatRoomService {
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final KafkaAdminService kafkaAdminService;
     private final ChatRedis chatRedis;
-    private final SimpMessagingTemplate messagingTemplate;
-
 
     public String createChatRoom(CreateChatRoomDto createChatRoomDto) {
         String roomId = UUID.randomUUID().toString();
@@ -92,6 +89,7 @@ public class ChatRoomService {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "findChatRoomList 쿼리 에러", e);
         }
+        logger.info("읽은 시간 불러오기");
         return chatRoomList;
     }
 
@@ -172,11 +170,4 @@ public class ChatRoomService {
         chatRedis.saveUserChatInfo(userId, roomId, lastMessageReadAt);
     }
 
-    public void broadcastLastReadTime(String roomId, Long userId) {
-        Map<Long, Date> lastReadTimes = new HashMap<>();
-        lastReadTimes.put(userId, new Date());
-
-        messagingTemplate.convertAndSend("/stomp/sub/chat/" + roomId + "/lastReadTime", lastReadTimes);
-
-    }
 }
