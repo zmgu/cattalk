@@ -23,8 +23,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
             "WHERE crn.roomId = :roomId AND crn.userId = :userId" )
     String findRoomNameByRoomIdAndUserId(@Param("roomId") String roomId, @Param("userId") Long userId);
 
-
-    @Query("SELECT new com.ex.backend.chat.dto.ChatRoomListDto(crn.roomId, crn.roomName, cm.content, cm.sendTime) " +
+    @Query("SELECT new com.ex.backend.chat.dto.ChatRoomListDto(crn.roomId, crn.roomName, cm.content, cm.sendTime, " +
+            "(SELECT COUNT(cm2) FROM ChatMessage cm2 WHERE cm2.roomId = crn.roomId AND cm2.sendTime > crn.lastMessageReadAt)) " +
             "FROM ChatRoomParticipant crn " +
             "JOIN ChatMessage cm ON crn.roomId = cm.roomId " +
             "WHERE crn.userId = :userId AND cm.sendTime = (" +
@@ -32,5 +32,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
             "FROM ChatMessage cm2 " +
             "WHERE cm2.roomId = crn.roomId)")
     List<ChatRoomListDto> findChatRoomListByUserId(@Param("userId") Long userId);
+
 
 }

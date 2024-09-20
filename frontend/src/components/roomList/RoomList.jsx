@@ -67,8 +67,6 @@ const RoomList = () => {
             return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
         }
     };
-    
-    
 
     return (
         <div className={roomList['list-container']}>
@@ -85,12 +83,14 @@ const RoomList = () => {
                     </div>
                     <div className={roomList['sendtime-unread']}>
                         <div className={roomList['sendtime']}>{room.sendTime ? formatSendTime(room.sendTime) : ''}</div>
-                        <div className={roomList['unread']}>
-                            <div className={roomList['red-box']}>
-                                    1
-                            </div>
+                            {room.unReadCnt > 0 && (
+                                <div className={roomList['unread']}>
+                                    <div className={roomList['red-box']}>
+                                        {room.unReadCnt}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    </div>
                 </div>
             ))}
         </div>
