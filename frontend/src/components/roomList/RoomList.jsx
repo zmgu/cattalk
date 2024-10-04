@@ -4,28 +4,68 @@ import roomList from './RoomList.module.css';
 import { LoginContext } from '../../contexts/LoginContextProvider';
 import { useNavigate } from 'react-router-dom';
 import profile_null from './../../assets/profile/profile_null.jpg';
+import { connectWebSocket, disconnectWebSocket } from './ChatRoomListWebSocket';
 
 const RoomList = () => {
 
     const [rooms, setRooms] = useState([]);
     const { userInfo } = useContext(LoginContext);
     const navigate = useNavigate();
+    let [roomIds, setRoomIds] = useState([]);
+
 
     useEffect(() => {
-        const fetchChatRoomList = async () => {
-            try {
-                const response = await chatRoomList(userInfo.userId);
-                const sortedRooms = response.data.sort((a, b) => new Date(b.sendTime) - new Date(a.sendTime));
-                setRooms(sortedRooms);
-            } catch (error) {
-                console.error("채팅방을 불러오는 데 실패했습니다.", error);
-            }
-        };
 
-        fetchChatRoomList();
+        if (userInfo) { 
+
+            fetchChatRoomList();
+
+        }
+
     }, [userInfo]);
 
+    useEffect(() => {
+        if(roomIds != '' && roomIds != null) {
+            const token = localStorage.getItem('Authorization');
+            connectWebSocket(userInfo.userId, roomIds, token, handleWebSocketMessage);
+            console.log('RoomList 웹소켓 연결 완료');
+        }
+    }, [roomIds])
+
+    const fetchChatRoomList = async () => {
+        try {
+            let response = await chatRoomList(userInfo.userId);
+            let sortedRooms = response.data.sort((a, b) => new Date(b.sendTime) - new Date(a.sendTime));
+            setRooms(sortedRooms);
+            console.log(`response.data : ${JSON.stringify(response.data)}`)
+            
+            // roomId 리스트 추출
+            roomIds = setRoomIds(response.data.map(room => room.roomId));
+
+        } catch (error) {
+            console.error("채팅방을 불러오는 데 실패했습니다.", error);
+        }
+    };
+
+    const handleWebSocketMessage = (receivedMessage) => {
+        setRooms(prevRooms => 
+            prevRooms.map(room => {
+                if (room.roomId === receivedMessage.roomId) {
+                    console.log(`receivedMessage.sendTime : ${receivedMessage.sendTime}`);
+                    return {
+                        ...room,
+                        content: receivedMessage.content,
+                        sendTime: receivedMessage.sendTime,
+                        unReadCnt: room.unReadCnt + 1
+                    };
+                }
+                return room;
+            })
+        );
+    };
+
     const handleDoubleClick = async (roomName, roomId) => {
+        disconnectWebSocket();
         navigate(`/chat/${roomId}`, { 
             state: { 
                 roomId: roomId,
