@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class WebSocketSessionManager {
+public class ChatRoomWebSocketSessionManager {
 
     // roomId 키로 userId와 sessionId를 매핑하여 웹소켓에 연결 중인 유저를 저장하는 맵
     private final Map<String, Map<Long, String>> roomIdKeyMap = new ConcurrentHashMap<>();
