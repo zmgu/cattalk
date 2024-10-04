@@ -26,13 +26,14 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        List<String> accessToken = headerAccessor.getNativeHeader("Authorization");
-        List<String> roomIdHeader = headerAccessor.getNativeHeader("roomId");
+        List<String> roomIdHeader = headerAccessor.getNativeHeader("RoomId");
 
-        Long userId = jwtProvider.getUserId(accessToken.get(0));
-        String roomId = roomIdHeader.get(0);
-
-        broadcast.broadcastLastReadTime(roomId, userId);
+        if (roomIdHeader != null && !roomIdHeader.isEmpty()) {
+            List<String> accessToken = headerAccessor.getNativeHeader("Authorization");
+            Long userId = jwtProvider.getUserId(accessToken.get(0));
+            String roomId = roomIdHeader.get(0);
+            broadcast.broadcastLastReadTime(roomId, userId);
+        }
     }
 
     @EventListener

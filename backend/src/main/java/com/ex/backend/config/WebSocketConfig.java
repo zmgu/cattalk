@@ -1,6 +1,6 @@
 package com.ex.backend.config;
 
-import com.ex.backend.websocket.WebSocketChannelInterceptor;
+import com.ex.backend.websocket.WebSocketInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -18,7 +18,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final WebSocketChannelInterceptor jwtChannelInterceptor;
+    private final WebSocketInterceptor chatRoomChannelInterceptor;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -35,6 +35,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(jwtChannelInterceptor);
+        registration.interceptors(chatRoomChannelInterceptor);
     }
 }
