@@ -1,11 +1,11 @@
 import './Chat.css';
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperclip, faPaperPlane, faArrowLeft, faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
 import { LoginContext } from '../../contexts/LoginContextProvider';
 import { getMessages, getLastReadTimes } from '../../apis/chat';
-import { connectWebSocket, disconnectWebSocket, sendMessage } from './WebSocket';
+import { connectWebSocket, disconnectWebSocket, sendMessage } from './ChatRoomWebSocket';
 
 const Chat = () => {
     const location = useLocation();
@@ -17,7 +17,8 @@ const Chat = () => {
     const chatInputRef = useRef(null);
     const chatMessageRef = useRef(null);
     const { userInfo } = useContext(LoginContext);
-
+    const navigate = useNavigate();
+    
     useEffect(() => {
         if (chatMessageRef.current) {
             const observer = new MutationObserver(scrollToBottom);
@@ -192,7 +193,19 @@ const Chat = () => {
             {/* 상단 영역 */}
             <div className='chat-header'>
                 <div className='chat-header-left'>
-                    <Link to='/'><FontAwesomeIcon icon={faArrowLeft} className='chat-header-icon' /></Link>
+                <div className='chat-header-left'>
+                <Link to='/' 
+                    onClick={(e) => { 
+                        e.preventDefault(); 
+                        disconnectWebSocket(); 
+                        navigate('/');
+                        }
+                    }
+                >
+                    <FontAwesomeIcon icon={faArrowLeft} className='chat-header-icon' />
+                </Link>
+            </div>
+
                 </div>
                 <div className='chat-header-center'>
                     <div className=''>{roomDetails.roomName}</div>
