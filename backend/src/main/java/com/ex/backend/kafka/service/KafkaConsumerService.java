@@ -5,7 +5,8 @@ import com.ex.backend.chat.entity.ChatMessage;
 import com.ex.backend.chat.service.ChatRoomService;
 import com.ex.backend.kafka.KafkaConsumerConfig;
 import com.ex.backend.kafka.KafkaUtil;
-import com.ex.backend.websocket.WebSocketSessionManager;
+import com.ex.backend.websocket.ChatRoomListWebSocketSessionManager;
+import com.ex.backend.websocket.ChatRoomWebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
@@ -22,7 +23,8 @@ import java.util.logging.Logger;
 public class KafkaConsumerService {
 
     private final KafkaConsumerConfig kafkaConsumerConfig;
-    private final WebSocketSessionManager webSocketSessionManager;
+    private final ChatRoomWebSocketSessionManager chatRoomSessionManager;
+    private final ChatRoomListWebSocketSessionManager chatRoomListSessionManager;
     private final Map<String, ConcurrentMessageListenerContainer<String, ChatMessage>> containers = new ConcurrentHashMap<>();
     private final Logger logger = Logger.getLogger(KafkaConsumerService.class.getName());
     private final KafkaUtil kafkaUtil;
@@ -44,7 +46,7 @@ public class KafkaConsumerService {
             logger.info("메시지 수신 완료");
             Map<Long, Date> lastReadTimes = new HashMap<>();
 
-            List<Long> userIds = webSocketSessionManager.getRoomAllUserByRoomId(roomId);
+            List<Long> userIds = chatRoomSessionManager.getRoomAllUserByRoomId(roomId);
 
             // 웹소켓 연결 중인 유저의 lastMessageReadAt 업데이트
             for (Long userId : userIds) {
@@ -56,6 +58,20 @@ public class KafkaConsumerService {
 
             ChatMessageResponseDto chatMessageResponseDto = new ChatMessageResponseDto(record.value(), lastReadTimes);
             messagingTemplate.convertAndSend("/stomp/sub/chat/" + roomId, chatMessageResponseDto);
+
+            // ChatRoomListWebSocketSessionManager를 사용하여 roomId의 유저 ID 목록 가져오기
+            List<Long> roomListUserIds = chatRoomListSessionManager.getRoomAllUserByRoomId(roomId);
+
+            for (Long userId : roomListUserIds) {
+                Map<String, Object> roomMessage = new HashMap<>();
+                roomMessage.put("roomId", roomId);
+                roomMessage.put("content", record.value().getContent());
+                roomMessage.put("sendTime", record.value().getSendTime());
+
+                // 각 유저에게 메시지 전송
+                messagingTemplate.convertAndSend("/stomp/sub/chat/" + userId, roomMessage);
+                logger.info("유저 ID: " + userId + " 에 메시지 전송됨");
+            }
 
         };
 
