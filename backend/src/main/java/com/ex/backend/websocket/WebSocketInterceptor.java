@@ -9,9 +9,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 
 @Component
@@ -45,7 +43,7 @@ public class WebSocketInterceptor implements ChannelInterceptor {
 
                 } else if(type.equals("chatRoomList")) {
                     String roomIds = accessor.getFirstNativeHeader("RoomIds");
-                    List<String> roomIdList = Arrays.asList(roomIds.split(","));
+                    String[] roomIdList = roomIds.split(",");
 
                     for (String roomId : roomIdList) {
                         chatRoomListSessionManager.addUserSession(roomId, userId, sessionId);
@@ -78,7 +76,7 @@ public class WebSocketInterceptor implements ChannelInterceptor {
                     Long userId = chatRoomSessionManager.getUserIdBySessionId(sessionId);
 
                     if (roomId != null) {
-                        chatRoomService.updateLastReadTimeRedis(userId, roomId, new Date());
+                        chatRoomService.updateLastReadTime(userId, roomId, new Date());
                         chatRoomSessionManager.removeUserSession(sessionId);
 
                         logger.info("채팅방 : " + roomId + ", 접속 유저 목록 : " + chatRoomSessionManager.getRoomAllUserByRoomId(roomId));

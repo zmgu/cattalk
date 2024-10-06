@@ -170,4 +170,10 @@ public class ChatRoomService {
         chatRedis.saveUserChatInfo(userId, roomId, lastMessageReadAt);
     }
 
+    public void updateLastReadTime(Long userId, String roomId, Date lastMessageReadAt) {
+        chatRedis.deleteUserChatInfo(userId, roomId);
+        chatRedis.saveUserChatInfo(userId, roomId, lastMessageReadAt);
+        chatRoomParticipantRepository.updateLastMessageReadAt(userId, roomId, lastMessageReadAt);
+
+    }
 }
