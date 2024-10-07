@@ -1,6 +1,7 @@
 package com.ex.backend.kafka.service;
 
 import com.ex.backend.chat.dto.ChatMessageResponseDto;
+import com.ex.backend.chat.dto.ChatRoomListMessageResponseDto;
 import com.ex.backend.chat.entity.ChatMessage;
 import com.ex.backend.chat.service.ChatRoomService;
 import com.ex.backend.kafka.KafkaConsumerConfig;
@@ -34,11 +35,11 @@ public class KafkaConsumerService {
 
     public void startListenerForRoom(ChatMessage chatMessage) {
         String roomId = chatMessage.getRoomId();
-        String groupId = kafkaUtil.groupIdKey(chatMessage);
+        String groupId = kafkaUtil.groupIdKey(chatMessage.getRoomId());
 
+        // 이미 해당 roomId에 대한 리스너가 실행 중이라면, 추가로 실행하지 않음
         if (containers.containsKey(roomId)) {
             logger.info("컨테이너 실행 중");
-            // 이미 해당 roomId에 대한 리스너가 실행 중이라면, 추가로 실행하지 않음
             return;
         }
 
@@ -59,18 +60,20 @@ public class KafkaConsumerService {
             ChatMessageResponseDto chatMessageResponseDto = new ChatMessageResponseDto(record.value(), lastReadTimes);
             messagingTemplate.convertAndSend("/stomp/sub/chat/" + roomId, chatMessageResponseDto);
 
-            // ChatRoomListWebSocketSessionManager를 사용하여 roomId의 유저 ID 목록 가져오기
+            /*
+            *  채팅방 목록 웹소켓에 연결 중인 유저에게 최신메시지 전송
+            * */
             List<Long> roomListUserIds = chatRoomListSessionManager.getRoomAllUserByRoomId(roomId);
 
             for (Long userId : roomListUserIds) {
-                Map<String, Object> roomMessage = new HashMap<>();
-                roomMessage.put("roomId", roomId);
-                roomMessage.put("content", record.value().getContent());
-                roomMessage.put("sendTime", record.value().getSendTime());
+                ChatRoomListMessageResponseDto roomMessage = ChatRoomListMessageResponseDto.builder()
+                        .roomId(roomId)
+                        .content(record.value().getContent())
+                        .sendTime(record.value().getSendTime())
+                        .build();
+                roomMessage.setRoomId(roomId);
 
-                // 각 유저에게 메시지 전송
                 messagingTemplate.convertAndSend("/stomp/sub/chat/" + userId, roomMessage);
-                logger.info("유저 ID: " + userId + " 에 메시지 전송됨");
             }
 
         };
@@ -78,9 +81,8 @@ public class KafkaConsumerService {
         ConcurrentMessageListenerContainer<String, ChatMessage> container =
                 kafkaConsumerConfig.createContainer(roomId, groupId, listener);
 
-        container.start(); // 컨테이너 시작
-        logger.info("컨테이너 시작");
-        containers.put(roomId, container); // 컨테이너를 저장하여 관리
+        container.start();
+        containers.put(roomId, container);
     }
 
     public synchronized void stopListenerForRoom(String roomId) {
