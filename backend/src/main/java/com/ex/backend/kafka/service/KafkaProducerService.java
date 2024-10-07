@@ -14,7 +14,7 @@ public class KafkaProducerService {
     private final KafkaUtil kafkaUtil;
 
     public void sendMessage(ChatMessage chatMessage) {
-        String key = kafkaUtil.groupIdKey(chatMessage);
+        String key = kafkaUtil.groupIdKey(chatMessage.getRoomId());
         kafkaTemplate.send(chatMessage.getRoomId(), key, chatMessage);
     }
 }
