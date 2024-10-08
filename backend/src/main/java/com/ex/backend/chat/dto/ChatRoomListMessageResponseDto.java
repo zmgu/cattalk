@@ -1,13 +1,9 @@
 package com.ex.backend.chat.dto;
 
-import lombok.*;
+import lombok.Builder;
 
 import java.util.Date;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class ChatRoomListMessageResponseDto {
 

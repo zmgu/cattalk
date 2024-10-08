@@ -71,7 +71,6 @@ public class KafkaConsumerService {
                         .content(record.value().getContent())
                         .sendTime(record.value().getSendTime())
                         .build();
-                roomMessage.setRoomId(roomId);
 
                 messagingTemplate.convertAndSend("/stomp/sub/chat/" + userId, roomMessage);
             }
