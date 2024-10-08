@@ -16,7 +16,7 @@ public class JwtProvider {
 
     private final JwtProps jwtProps;
 
-    private SecretKey secretKey;
+    private final SecretKey secretKey;
 
     public JwtProvider(JwtProps jwtProps) {
         this.jwtProps = jwtProps;

@@ -47,13 +47,4 @@ public class ChatRoomListWebSocketSessionManager {
                 .collect(Collectors.toList());
     }
 
-    // 채팅방 아이디로 세션 아이디들을 찾는 메서드
-    public List<String> getSessionIdsByRoomId(String roomId) {
-        Map<Long, String> userSessions = roomIdKeyMap.get(roomId);
-        if (userSessions != null) {
-            return new ArrayList<>(userSessions.values());
-        }
-        return Collections.emptyList();
-    }
-
 }
