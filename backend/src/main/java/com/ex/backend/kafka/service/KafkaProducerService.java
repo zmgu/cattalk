@@ -1,7 +1,6 @@
 package com.ex.backend.kafka.service;
 
 import com.ex.backend.chat.entity.ChatMessage;
-import com.ex.backend.kafka.KafkaUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -10,11 +9,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KafkaProducerService {
 
-    private final KafkaTemplate<String, ChatMessage> kafkaTemplate;
-    private final KafkaUtil kafkaUtil;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendMessage(ChatMessage chatMessage) {
-        String key = kafkaUtil.groupIdKey(chatMessage.getRoomId());
-        kafkaTemplate.send(chatMessage.getRoomId(), key, chatMessage);
+        kafkaTemplate.send("chat", chatMessage);
     }
 }
