@@ -6,7 +6,6 @@ import com.ex.backend.chat.entity.ChatRoom;
 import com.ex.backend.chat.entity.ChatRoomParticipant;
 import com.ex.backend.chat.repository.ChatRoomParticipantRepository;
 import com.ex.backend.chat.repository.ChatRoomRepository;
-import com.ex.backend.kafka.service.KafkaAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +22,10 @@ public class ChatRoomService {
     private final Logger logger = Logger.getLogger(ChatRoomService.class.getName());
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
-    private final KafkaAdminService kafkaAdminService;
     private final ChatRedis chatRedis;
 
     public String createChatRoom(CreateChatRoomDto createChatRoomDto) {
         String roomId = UUID.randomUUID().toString();
-        kafkaAdminService.createChatRoomTopic(roomId);
 
         Date now = new Date();
 
@@ -68,7 +65,6 @@ public class ChatRoomService {
             logger.log(Level.SEVERE, "createChatRoomParticipant 쿼리 에러", e);
         }
 
-        kafkaAdminService.createChatRoomTopic(roomId);
         return roomId;
     }
 
