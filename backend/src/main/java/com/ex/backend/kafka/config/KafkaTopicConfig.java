@@ -1,5 +1,6 @@
-package com.ex.backend.kafka;
+package com.ex.backend.kafka.config;
 
+import com.ex.backend.kafka.constants.KafkaConstants;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -13,16 +14,16 @@ public class KafkaTopicConfig {
 
     private final KafkaAdmin kafkaAdmin;
 
-    private NewTopic createTopic(String roomId) {
+    private NewTopic createTopic(String topic) {
 
-        return TopicBuilder.name(roomId)
-                .partitions(10)
+        return TopicBuilder.name(topic)
+                .partitions(KafkaConstants.CHAT_PARTITIONS)
                 .replicas(1)
                 .build();
     }
 
     @PostConstruct
     public void init() {
-        kafkaAdmin.createOrModifyTopics(createTopic("chat"));
+        kafkaAdmin.createOrModifyTopics(createTopic(KafkaConstants.CHAT_TOPIC));
     }
 }

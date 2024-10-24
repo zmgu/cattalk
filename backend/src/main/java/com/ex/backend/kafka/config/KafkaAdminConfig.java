@@ -1,6 +1,7 @@
-package com.ex.backend.kafka;
+package com.ex.backend.kafka.config;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -13,7 +14,8 @@ import java.util.Map;
 @EnableKafka
 public class KafkaAdminConfig {
 
-    private final String bootstrapServers = "localhost:9094";
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
 
     @Bean
     public KafkaAdmin kafkaAdmin() {

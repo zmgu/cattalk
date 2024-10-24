@@ -4,6 +4,7 @@ import com.ex.backend.chat.dto.ChatMessageResponseDto;
 import com.ex.backend.chat.dto.ChatRoomListMessageResponseDto;
 import com.ex.backend.chat.entity.ChatMessage;
 import com.ex.backend.chat.service.ChatRoomService;
+import com.ex.backend.kafka.constants.KafkaConstants;
 import com.ex.backend.websocket.ChatRoomListWebSocketSessionManager;
 import com.ex.backend.websocket.ChatRoomWebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +18,12 @@ import java.util.*;
 @RequiredArgsConstructor
 public class KafkaConsumerService {
 
+    private final SimpMessagingTemplate messagingTemplate;
+    private final ChatRoomService chatRoomService;
     private final ChatRoomWebSocketSessionManager chatRoomSessionManager;
     private final ChatRoomListWebSocketSessionManager chatRoomListSessionManager;
-    private final ChatRoomService chatRoomService;
-    private final SimpMessagingTemplate messagingTemplate;
 
-    @KafkaListener(topics = "chat", containerFactory = "chatKafkaListenerContainerFactory", concurrency = "10")
+    @KafkaListener(topics = KafkaConstants.CHAT_TOPIC, containerFactory = "chatKafkaListenerContainerFactory", concurrency = KafkaConstants.CHAT_CONCURRENCY)
     public void messageListener(ChatMessage chatMessage) {
         String roomId = chatMessage.getRoomId();
 
