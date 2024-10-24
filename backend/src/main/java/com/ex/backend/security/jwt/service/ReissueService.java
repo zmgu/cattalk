@@ -8,12 +8,12 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.logging.Logger;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReissueService {
@@ -21,20 +21,19 @@ public class ReissueService {
     private final JwtProvider jwtProvider;
     private final RefreshTokenRedis refreshTokenRedis;
     private final CookieUtil cookieUtil;
-    private final Logger logger = Logger.getLogger(ReissueService.class.getName());
 
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshToken = cookieUtil.getCookieValue(request, JwtConstants.REFRESH_TOKEN);
         if (refreshToken == null) {
-            logger.info(" refreshToken null ");
+            log.info(" refreshToken null");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         try {
             jwtProvider.isExpired(refreshToken);
         } catch (ExpiredJwtException e) {
-            logger.info(" refreshToken 만료됨 ");
+            log.info(" refreshToken 만료됨 ");
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -42,7 +41,7 @@ public class ReissueService {
         //DB에 저장되어 있는지 확인
         Boolean isExist = refreshTokenRedis.existRefreshToken(refreshToken);
         if (!isExist) {
-            logger.info(" 저장되어 있는 refreshToken이 아님 ");
+            log.info(" 저장되어 있는 refreshToken 아님");
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -9,19 +9,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final Logger logger = Logger.getLogger(JwtRequestFilter.class.getName());
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -30,15 +30,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // 헤더에서 accessToken 추출
         String accessToken = request.getHeader("authorization");
         String requestURI = request.getRequestURI();
-        logger.info(" requestURI: " + requestURI);
+        log.info("requestURI: {}", requestURI);
 
         if(requestURI.startsWith("/stomp/ws") || (accessToken == null && requestURI.equals("/auth/reissue"))) {
             filterChain.doFilter(request, response);
             return;
 
-        } else if(accessToken == null && !requestURI.equals("/auth/reissue")) {
+        } else if(accessToken == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            logger.info("엑세스 토큰이 없고, 재발급 경로 요청이 아님");
+            log.info("엑세스 토큰이 없고, 재발급 경로 요청이 아님");
             return;
         }
 
@@ -46,7 +46,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         try {
             jwtProvider.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-            logger.info("AccessToken 만료됨");
+            log.info("AccessToken 만료됨");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

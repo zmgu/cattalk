@@ -10,7 +10,6 @@ import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @Component
 @RequiredArgsConstructor
@@ -18,11 +17,10 @@ public class WebSocketEventListener {
 
     private final JwtProvider jwtProvider;
     private final BroadcastService broadcast;
-    private final Logger logger = Logger.getLogger(WebSocketEventListener.class.getName());
 
-    /*
-    *  웹소켓 연결 후 같은 채팅방 웹소켓 연결된 유저에게 내 정보 브로드캐스트
-    * */
+    /**
+     *  웹소켓 연결 후 같은 채팅방 웹소켓 연결된 유저에게 내 정보 브로드캐스트
+     */
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());

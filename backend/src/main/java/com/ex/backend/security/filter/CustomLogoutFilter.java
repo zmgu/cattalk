@@ -13,18 +13,18 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JwtProvider jwtProvider;
     private final RefreshTokenRedis refreshTokenRedis;
     private final CookieUtil cookieUtil;
-    private final Logger logger = Logger.getLogger(CustomLogoutFilter.class.getName());
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -47,11 +47,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         // 리프래시 토큰 null 체크
         if (refreshToken == null) {
-            logger.info("refreshToken = null");
-            logger.info("로그아웃 진행");
-
+            log.info("refreshToken = null, 로그아웃 진행");
             logoutSetting(response);
-
             return;
         }
 
@@ -59,22 +56,17 @@ public class CustomLogoutFilter extends GenericFilterBean {
         try {
             jwtProvider.isExpired(refreshToken);
         } catch (ExpiredJwtException e) {
-            logger.info("refreshToken 만료됨 ");
-            logger.info("로그아웃 진행");
-
+            log.info("refreshToken 만료됨, 로그아웃 진행");
             logoutSetting(response);
-
             return;
         }
 
         // DB에 저장되어 있는지 확인
         Boolean isExist = refreshTokenRedis.existRefreshToken(refreshToken);
+
         if (!isExist) {
-            logger.info("refreshToken이 DB에 존재하지 않음 ");
-            logger.info("로그아웃 진행");
-
+            log.info("refreshToken이 DB에 존재하지 않음, 로그아웃 진행");
             logoutSetting(response);
-
             return;
         }
 

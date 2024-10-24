@@ -7,19 +7,18 @@ import com.ex.backend.chat.entity.ChatRoomParticipant;
 import com.ex.backend.chat.repository.ChatRoomParticipantRepository;
 import com.ex.backend.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
 
-    private final Logger logger = Logger.getLogger(ChatRoomService.class.getName());
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final ChatRedis chatRedis;
@@ -37,10 +36,8 @@ public class ChatRoomService {
 
             chatRoomRepository.save(chatRoom);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "createChatRoom 쿼리 에러", e);
+            log.error("createChatRoom 쿼리 에러 {}", e.getMessage());
         }
-
-
 
         ChatRoomParticipant chatRoomParticipant = ChatRoomParticipant.builder()
                 .roomId(roomId)
@@ -62,7 +59,7 @@ public class ChatRoomService {
             chatRoomParticipantRepository.save(chatRoomParticipant);
             chatRoomParticipantRepository.save(friendChatRoomParticipant);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "createChatRoomParticipant 쿼리 에러", e);
+            log.error("createChatRoomParticipant 쿼리 에러 {}", e.getMessage());
         }
 
         return roomId;
@@ -73,7 +70,7 @@ public class ChatRoomService {
         try {
             roomId = chatRoomRepository.findChatRoomIdByUserIds(myUserId, friendUserId);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "findChatRoom 쿼리 에러", e);
+            log.error("findChatRoom 쿼리 에러 {}", e.getMessage());
         }
         return roomId;
     }
@@ -83,9 +80,8 @@ public class ChatRoomService {
         try {
             chatRoomList = chatRoomRepository.findChatRoomListByUserId(userId);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "findChatRoomList 쿼리 에러", e);
+            log.error("findChatRoomList 쿼리 에러 {}", e.getMessage());
         }
-        logger.info("읽은 시간 불러오기");
         return chatRoomList;
     }
 
@@ -94,7 +90,7 @@ public class ChatRoomService {
         try {
             chatRoomName = chatRoomRepository.findRoomNameByRoomIdAndUserId(roomId, userId);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "findChatRoomName 쿼리 에러", e);
+            log.error("findChatRoomName 쿼리 에러 {}", e.getMessage());
         }
         return chatRoomName;
     }
@@ -105,7 +101,7 @@ public class ChatRoomService {
 
         try {
             String exist = chatRedis.getUserChatInfo(userId, roomId, "lastMessageReadAt");
-            logger.info("exist: " + exist);
+            log.info("exist: {}", exist);
 
             // 레디스에 데이터가 있을 경우 본인 데이터만 갱신 후 종료
             if (exist != null) {
@@ -133,7 +129,7 @@ public class ChatRoomService {
                 lastReadTimes.put(participantId, lastMessageReadAt);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "findChatRoomParticipantByRoomId 쿼리 에러", e);
+            log.error("findChatRoomParticipantByRoomId 쿼리 에러 {}", e.getMessage());
         }
 
         return lastReadTimes;
