@@ -4,24 +4,18 @@ server:
 spring:
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/zm?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://${MYSQL_URL}?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
   kafka:
-    bootstrap-servers: localhost:9094
+    bootstrap-servers: ${BOOTSTRAP_SERVERS}
     consumer:
-      group-id: chat-group
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
   jpa:
     hibernate:
@@ -39,7 +33,7 @@ spring:
             client-name: google
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: http://localhost:8888/login/oauth2/code/google
+            redirect-uri: ${REDIRECT_URL}/login/oauth2/code/google
             authorization-grant-type: authorization_code
             scope:
               - profile
@@ -48,7 +42,7 @@ spring:
             client-name: naver
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
-            redirect-uri: http://localhost:8888/login/oauth2/code/naver
+            redirect-uri: ${REDIRECT_URL}/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             scope:
               - name
@@ -57,7 +51,7 @@ spring:
             client-name: kakao
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
-            redirect-uri: http://localhost:8888/login/oauth2/code/kakao
+            redirect-uri: ${REDIRECT_URL}/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
@@ -79,5 +73,5 @@ com:
   ex:
     backend:
       secret-key: ${JWT_SECRET_KEY}
-      access-expiredtime: 3600000
-      refresh-expiredtime: 86400000
+      access-expiredtime: ${ACCESS_EXPIREDTIME}
+      refresh-expiredtime: ${REFRESH_EXPIREDTIME}
