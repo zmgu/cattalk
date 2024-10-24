@@ -14,15 +14,12 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.logging.Logger;
-
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private final Logger logger = Logger.getLogger(UserService.class.getName());
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
@@ -73,7 +70,7 @@ public class UserService {
         try {
             return userRepository.findAllByIdNotIn(userId);
         } catch (Exception e) {
-            logger.severe("selectUserList 에러 : " + e.getMessage());
+            log.error("selectUserList 에러 : {}" + e.getMessage());
             throw new Exception("Failed to fetch user list", e);
         }
     }

@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -49,9 +50,9 @@ public class SecurityConfig {
 
         //csrf, formLogin, httpBasic => disable
         http
-                .csrf((csrf) -> csrf.disable())
-                .formLogin((login) -> login.disable())
-                .httpBasic((basic) -> basic.disable())
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
         ;
 
         // cors 설정
@@ -104,12 +105,9 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    private AuthenticationManager authenticationManager;
-
     @Bean
     public AuthenticationManager authenticationManager
             (AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
-        return authenticationManager;
+        return authenticationConfiguration.getAuthenticationManager();
     }
 }
