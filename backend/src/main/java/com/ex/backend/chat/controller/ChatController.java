@@ -27,7 +27,6 @@ public class ChatController {
     @MessageMapping("/send")
     public void sendMessage(@Payload ChatMessage chatMessage) {
         kafkaProducerService.sendMessage(chatMessage);
-        chatService.saveMessage(chatMessage);
     }
 
 }
