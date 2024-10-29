@@ -1,0 +1,16 @@
+server:
+  port: 8889
+
+spring:
+  application:
+    name: chat-save
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_URL}?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  kafka:
+    bootstrap-servers: ${BOOTSTRAP_SERVERS}
+    consumer:
+      auto-offset-reset: earliest
