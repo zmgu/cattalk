@@ -20,7 +20,6 @@ public class UserService {
             return userRepository.findAllByIdNotIn(userId);
         } catch (Exception e) {
             log.error("selectUserList 에러 : {}" + e.getMessage());
-            throw new Exception("Failed to fetch user list", e);
         }
     }
 }
