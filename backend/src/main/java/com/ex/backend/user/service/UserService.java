@@ -15,11 +15,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public List<User> selectUserList(Long userId) throws Exception {
-        try {
-            return userRepository.findAllByIdNotIn(userId);
-        } catch (Exception e) {
-            log.error("selectUserList 에러 : {}" + e.getMessage());
-        }
+    public List<User> selectUserList(Long userId) {
+        return userRepository.findAllByIdNotIn(userId);
     }
 }
