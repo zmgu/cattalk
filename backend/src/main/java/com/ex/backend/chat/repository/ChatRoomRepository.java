@@ -35,6 +35,4 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
             "WHERE cm2.roomId = crn.roomId)")
     List<ChatRoomListDto> findChatRoomListByUserId(@Param("userId") Long userId);
 
-
-
 }
