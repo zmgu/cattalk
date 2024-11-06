@@ -16,5 +16,4 @@ public class ChatService {
     public List<ChatMessage> getChatMessagesByRoomId(String roomId) {
         return chatMessageRepository.findByRoomIdOrderBySendTimeAsc(roomId);
     }
-
 }
