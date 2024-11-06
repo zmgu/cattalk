@@ -13,10 +13,6 @@ public class ChatService {
 
     private final ChatMessageRepository chatMessageRepository;
 
-    public void saveMessage(ChatMessage chatMessage) {
-        chatMessageRepository.save(chatMessage);
-    }
-
     public List<ChatMessage> getChatMessagesByRoomId(String roomId) {
         return chatMessageRepository.findByRoomIdOrderBySendTimeAsc(roomId);
     }
