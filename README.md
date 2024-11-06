@@ -12,7 +12,7 @@
 
 
 ## Frontend
-React
+* React
 
 
 ## Database
