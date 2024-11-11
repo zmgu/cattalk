@@ -32,9 +32,6 @@ public class ChatRoomWebSocketSessionManager {
         hashOps.put(SESSION_PREFIX + sessionId, "roomId", roomId);
     }
 
-    /**
-     *  roomId, sessionId 키로 가지는 사용자 정보 삭제
-     */
     public void removeUserSession(String sessionId) {
         String userId = hashOps.get(SESSION_PREFIX + sessionId, "userId");
         String roomId = hashOps.get(SESSION_PREFIX + sessionId, "roomId");
