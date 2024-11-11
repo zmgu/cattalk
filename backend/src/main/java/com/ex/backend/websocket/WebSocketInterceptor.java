@@ -34,26 +34,24 @@ public class WebSocketInterceptor implements ChannelInterceptor {
 
                 log.info("type : {} ", type);
 
-                if(type.equals("chatRoom")) {
-                    String roomId = accessor.getFirstNativeHeader("RoomId");
-                    chatRoomSessionManager.addUserSession(roomId, userId, sessionId);
-                    log.info("채팅방 : {}, 접속 유저 목록 : {}", roomId, chatRoomSessionManager.getRoomAllUserByRoomId(roomId));
-                    log.info("채팅방 : {} 을 들어가지 않고 채팅방 목록에 접속한 유저 목록 : {}", roomId, chatRoomListSessionManager.getRoomAllUserByRoomId(roomId));
-
-                } else if(type.equals("chatRoomList")) {
-                    String roomIds = accessor.getFirstNativeHeader("RoomIds");
-                    String[] roomIdList = roomIds.split(",");
-
-                    for (String roomId : roomIdList) {
-                        chatRoomListSessionManager.addUserSession(roomId, userId, sessionId);
-                        log.info("채팅방 : {}, 유저 ID : {} 세션 추가됨", roomId, userId);
+                switch (type) {
+                    case "chatRoom" -> {
+                        String roomId = accessor.getFirstNativeHeader("RoomId");
+                        chatRoomSessionManager.addUserSession(roomId, userId, sessionId);
+                        log.info("채팅방 : {}, 접속 유저 목록 : {}", roomId, chatRoomSessionManager.getRoomAllUserByRoomId(roomId));
                         log.info("채팅방 : {} 을 들어가지 않고 채팅방 목록에 접속한 유저 목록 : {}", roomId, chatRoomListSessionManager.getRoomAllUserByRoomId(roomId));
                     }
 
-                } else {
+                    case "chatRoomList" -> {
+                        String roomIds = accessor.getFirstNativeHeader("RoomIds");
+                        String[] roomIdList = roomIds.split(",");
 
+                        for (String roomId : roomIdList) {
+                            chatRoomListSessionManager.addUserSession(roomId, userId, sessionId);
+                            log.info("채팅방 : {} 을 들어가지 않고 채팅방 목록에 접속한 유저 목록 : {}", roomId, chatRoomListSessionManager.getRoomAllUserByRoomId(roomId));
+                        }
+                    }
                 }
-
             }
 
             case SUBSCRIBE -> {
@@ -86,11 +84,9 @@ public class WebSocketInterceptor implements ChannelInterceptor {
                         }
                     }
                 }
-
             }
         }
 
         return message;
     }
 }
-
