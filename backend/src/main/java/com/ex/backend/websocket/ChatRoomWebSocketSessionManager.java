@@ -1,68 +1,69 @@
 package com.ex.backend.websocket;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class ChatRoomWebSocketSessionManager {
 
-    // roomId 키로 userId와 sessionId를 매핑하여 웹소켓에 연결 중인 유저를 저장하는 맵
-    private final Map<String, Map<Long, String>> roomIdKeyMap = new ConcurrentHashMap<>();
+    private final RedisTemplate<String, Object> redisTemplate;
+    private HashOperations<String, String, String> hashOps;
 
-    // sessionId 키로 userId와 roomId를 매핑하는 맵
-    private final Map<String, Map<Long, String>> sessionIdKeyMap = new ConcurrentHashMap<>();
+    private static final String ROOM_PREFIX = "room:";
+    private static final String SESSION_PREFIX = "session:";
 
-    // 웹소켓 연결 중인 유저 추가
-    public void addUserSession(String roomId, Long userId, String sessionId) {
-        roomIdKeyMap
-                .computeIfAbsent(roomId, k -> new ConcurrentHashMap<>())
-                .put(userId, sessionId);
-
-        Map<Long, String> userRoomMap = new ConcurrentHashMap<>();
-        userRoomMap.put(userId, roomId);
-        sessionIdKeyMap.put(sessionId, userRoomMap);
+    @PostConstruct
+    private void init() {
+        this.hashOps = redisTemplate.opsForHash();
     }
 
-    // 웹소켓 연결 해제한 유저 제거
-    public void removeUserSession(String sessionId) {
-        Map<Long, String> userRoomMap = sessionIdKeyMap.get(sessionId);
-        if (userRoomMap != null) {
-            Long userId = userRoomMap.keySet().iterator().next();
-            String roomId = userRoomMap.get(userId);
+    public void addUserSession(String roomId, Long userId, String sessionId) {
+        hashOps.put(ROOM_PREFIX + roomId, String.valueOf(userId), sessionId);
+        hashOps.put(SESSION_PREFIX + sessionId, "userId", String.valueOf(userId));
+        hashOps.put(SESSION_PREFIX + sessionId, "roomId", roomId);
+    }
 
-            Map<Long, String> userSessions = roomIdKeyMap.get(roomId);
-            if (userSessions != null) {
-                userSessions.remove(userId);
-                if (userSessions.isEmpty()) {
-                    roomIdKeyMap.remove(roomId);
-                }
+    /**
+     *  roomId, sessionId 키로 가지는 사용자 정보 삭제
+     */
+    public void removeUserSession(String sessionId) {
+        String userId = hashOps.get(SESSION_PREFIX + sessionId, "userId");
+        String roomId = hashOps.get(SESSION_PREFIX + sessionId, "roomId");
+
+        if (userId != null && roomId != null) {
+            hashOps.delete(ROOM_PREFIX + roomId, userId);
+
+            Set<String> fields = hashOps.keys(SESSION_PREFIX + sessionId);
+            if (!fields.isEmpty()) {
+                hashOps.delete(SESSION_PREFIX + sessionId, fields.toArray());
             }
-            sessionIdKeyMap.remove(sessionId); // sessionId와 userId, roomId 매핑 제거
         }
     }
 
     public String getRoomIdBySessionId(String sessionId) {
-        Map<Long, String> userRoomMap = sessionIdKeyMap.get(sessionId);
-        return (userRoomMap != null) ? userRoomMap.values().iterator().next() : null;
+        return hashOps.get(SESSION_PREFIX + sessionId, "roomId");
     }
 
-    // sessionId를 사용하여 userId 반환
     public Long getUserIdBySessionId(String sessionId) {
-        Map<Long, String> userRoomMap = sessionIdKeyMap.get(sessionId);
-        if (userRoomMap != null && !userRoomMap.isEmpty()) {
-            return userRoomMap.keySet().iterator().next();
-        }
-        return null;
+        String userIdStr = hashOps.get(SESSION_PREFIX + sessionId, "userId");
+        return (userIdStr != null) ? Long.parseLong(userIdStr) : null;
     }
 
     public List<Long> getRoomAllUserByRoomId(String roomId) {
-        Map<Long, String> userSessions = roomIdKeyMap.get(roomId);
-        if (userSessions != null) {
-            return new ArrayList<>(userSessions.keySet());
-        }
-        return Collections.emptyList();
+        Map<String, String> userSessions = hashOps.entries(ROOM_PREFIX + roomId);
+        return userSessions.keySet().stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
     }
 }
+
 
