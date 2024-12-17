@@ -1,24 +1,25 @@
-import room from './RoomListHeader.module.css'
-import { Link } from 'react-router-dom'
+import room from './RoomListHeader.module.css';
 import { useContext, useState, useEffect, useRef } from 'react';
 import { LoginContext } from '../../../contexts/LoginContextProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGear, faCommentDots, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { ModalContext } from '../../../contexts/ModalContext';
+
 
 const RoomListHeader = () => {
     const { logout } = useContext(LoginContext);
     const [showList, setShowList] = useState(false);
     const menuRef = useRef();
+    const { openModal } = useContext(ModalContext);
 
     // 메뉴 외부 클릭 감지
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setShowList(false); // 메뉴 외부 클릭 시 메뉴 닫기
+                setShowList(false);
             }
         };
 
-        // 문서 전체에 클릭 이벤트 리스너 추가
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -27,7 +28,7 @@ const RoomListHeader = () => {
 
     const toggleList = () => {
         setShowList(!showList);
-    }
+    };
 
     return (
         <div className={room['container']} ref={menuRef}>
@@ -38,12 +39,10 @@ const RoomListHeader = () => {
                 <button className={room['btn']}>
                     <FontAwesomeIcon icon={faMagnifyingGlass} className={room['icon']} />
                 </button>
-                <button className={room['btn']}>
+
+                <button className={room['btn']} onClick={openModal}>
                     <FontAwesomeIcon icon={faCommentDots} className={room['icon']} />
                 </button>
-                <div className={`${room['options']} ${showList ? room['show'] : ''}`}>
-                    <button>채팅방 만들기</button>
-                </div>
     
                 <button id="menuToggle" className={room['btn']} onClick={toggleList}>
                     <FontAwesomeIcon icon={faGear} className={room['icon']} />
@@ -58,7 +57,6 @@ const RoomListHeader = () => {
             </div>
         </div>
     );
-    
 }
 
 export default RoomListHeader;

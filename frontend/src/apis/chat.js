@@ -13,6 +13,15 @@ export const createChatRoom = (
         , friendNickname 
     });
 
+// 그룹 채팅방 생성
+export const createGroupChatRoom = (chatRoomName, userIds) => 
+    privateApi.post(`/chat/rooms/group`, {
+        params: {
+            chatRoomName: chatRoomName,
+            userIds : userIds
+        }
+    });
+
 // 내 채팅방 리스트
 export const chatRoomList = (userId) =>
     privateApi.get(`/chat/rooms`, {
