@@ -1,6 +1,7 @@
 package com.ex.backend.chat.service;
 
 import com.ex.backend.chat.dto.ChatRoomListDto;
+import com.ex.backend.chat.dto.CreateGroupChatRoomDto;
 import com.ex.backend.chat.dto.CreateChatRoomDto;
 import com.ex.backend.chat.entity.ChatRoom;
 import com.ex.backend.chat.entity.ChatRoomParticipant;
@@ -23,9 +24,12 @@ public class ChatRoomService {
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final ChatRedis chatRedis;
 
-    public String createChatRoom(CreateChatRoomDto createChatRoomDto) {
+    /**
+     *  내부 함수
+     *  createChatRoomId, saveParticipant
+     */
+    private String createChatRoomId() {
         String roomId = UUID.randomUUID().toString();
-
         Date now = new Date();
 
         try {
@@ -33,33 +37,52 @@ public class ChatRoomService {
                     .roomId(roomId)
                     .createDate(now)
                     .build();
-
             chatRoomRepository.save(chatRoom);
         } catch (Exception e) {
             log.error("createChatRoom 쿼리 에러 {}", e.getMessage());
+            throw new RuntimeException("Failed to create chat room");
         }
 
-        ChatRoomParticipant chatRoomParticipant = ChatRoomParticipant.builder()
-                .roomId(roomId)
-                .userId(createChatRoomDto.getMyUserId())
-                .roomName(createChatRoomDto.getFriendNickname())
-                .lastMessageReadAt(now)
-                .JoinedAt(now)
-                .build();
+        return roomId;
+    }
 
-        ChatRoomParticipant friendChatRoomParticipant = ChatRoomParticipant.builder()
-                .roomId(roomId)
-                .userId(createChatRoomDto.getFriendUserId())
-                .roomName(createChatRoomDto.getMyNickname())
-                .lastMessageReadAt(now)
-                .JoinedAt(now)
-                .build();
+    private void saveParticipant(String roomId, Long userId, String roomName) {
+
+        Date now = new Date();
 
         try {
-            chatRoomParticipantRepository.save(chatRoomParticipant);
-            chatRoomParticipantRepository.save(friendChatRoomParticipant);
+            ChatRoomParticipant participant = ChatRoomParticipant.builder()
+                    .roomId(roomId)
+                    .userId(userId)
+                    .roomName(roomName)
+                    .lastMessageReadAt(now)
+                    .JoinedAt(now)
+                    .build();
+
+            chatRoomParticipantRepository.save(participant);
         } catch (Exception e) {
-            log.error("createChatRoomParticipant 쿼리 에러 {}", e.getMessage());
+            log.error("saveParticipant 쿼리 에러 {}", e.getMessage());
+            throw new RuntimeException("Failed to save participant");
+        }
+    }
+
+    public String createChatRoom(CreateChatRoomDto dto) {
+
+        String roomId = createChatRoomId();
+
+        saveParticipant(roomId, dto.getMyUserId(), dto.getFriendNickname());
+        saveParticipant(roomId, dto.getFriendUserId(), dto.getMyNickname());
+
+        return roomId;
+    }
+
+    public String createGroupChatRoom(String chatRoomName, List<Long> userIds) {
+
+        String roomId = createChatRoomId();
+
+        for (Long userId : userIds) {
+//            saveParticipant(roomId, userId, chatRoomName);
+            System.out.println("userId = " + userId);
         }
 
         return roomId;

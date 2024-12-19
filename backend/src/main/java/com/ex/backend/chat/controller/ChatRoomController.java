@@ -1,6 +1,7 @@
 package com.ex.backend.chat.controller;
 
 import com.ex.backend.chat.dto.ChatRoomListDto;
+import com.ex.backend.chat.dto.CreateGroupChatRoomDto;
 import com.ex.backend.chat.dto.CreateChatRoomDto;
 import com.ex.backend.chat.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,13 @@ public class ChatRoomController {
     public ResponseEntity<String> createChatRoom(@RequestBody CreateChatRoomDto createChatRoomDto) {
 
         String createdRoom = chatRoomService.createChatRoom(createChatRoomDto);
+        return ResponseEntity.ok(createdRoom);
+    }
+
+    @PostMapping("/group")
+    public ResponseEntity<String> createGroupChatRoom(@RequestParam String chatRoomName, @RequestParam List<Long> userIds) {
+
+        String createdRoom = chatRoomService.createGroupChatRoom(chatRoomName, userIds);
         return ResponseEntity.ok(createdRoom);
     }
 
