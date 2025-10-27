@@ -38,7 +38,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         } else if(accessToken == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            log.info("엑세스 토큰이 없고, 재발급 경로 요청이 아님");
+            log.info("엑세스 토큰 == null, 재발급 경로 요청이 아님");
             return;
         }
 
@@ -46,7 +46,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         try {
             jwtProvider.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-            log.info("AccessToken 만료됨");
+            log.info("AccessToken 만료");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
